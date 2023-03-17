@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.littleshoot</groupId>
+    <groupId>org.bytesgo.proxy</groupId>
     <artifactId>littleproxy</artifactId>
     <packaging>jar</packaging>
     <version>1.1.3-SNAPSHOT</version>
@@ -14,9 +14,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <github.global.server>github</github.global.server>
-        <netty.version>4.0.44.Final</netty.version>
-        <slf4j.version>1.7.24</slf4j.version>
-        <java.version>1.7</java.version>
+        <netty.version>4.1.89.Final</netty.version>
+        <slf4j.version>2.0.6</slf4j.version>
+        <java.version>1.8</java.version>
     </properties>
 
     <organization>

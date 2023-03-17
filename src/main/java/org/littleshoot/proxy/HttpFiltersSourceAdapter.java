@@ -8,24 +8,23 @@ import io.netty.handler.codec.http.HttpRequest;
  */
 public class HttpFiltersSourceAdapter implements HttpFiltersSource {
 
-    public HttpFilters filterRequest(HttpRequest originalRequest) {
-        return new HttpFiltersAdapter(originalRequest, null);
-    }
-    
-    @Override
-    public HttpFilters filterRequest(HttpRequest originalRequest,
-            ChannelHandlerContext ctx) {
-        return filterRequest(originalRequest);
-    }
+  public HttpFilters filterRequest(HttpRequest originalRequest) {
+    return new HttpFiltersAdapter(originalRequest, null);
+  }
 
-    @Override
-    public int getMaximumRequestBufferSizeInBytes() {
-        return 0;
-    }
+  @Override
+  public HttpFilters filterRequest(HttpRequest originalRequest, ChannelHandlerContext ctx) {
+    return filterRequest(originalRequest);
+  }
 
-    @Override
-    public int getMaximumResponseBufferSizeInBytes() {
-        return 0;
-    }
+  @Override
+  public int getMaximumRequestBufferSizeInBytes() {
+    return 0;
+  }
+
+  @Override
+  public int getMaximumResponseBufferSizeInBytes() {
+    return 0;
+  }
 
 }
