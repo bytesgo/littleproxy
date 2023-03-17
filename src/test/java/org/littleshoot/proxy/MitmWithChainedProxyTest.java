@@ -7,9 +7,10 @@ import static org.junit.Assert.assertThat;
 import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.littleshoot.proxy.extras.SelfSignedMitmManager;
-
+import com.bytesgo.littleproxy.HttpFilters;
+import com.bytesgo.littleproxy.HttpFiltersAdapter;
+import com.bytesgo.littleproxy.HttpFiltersSourceAdapter;
+import com.bytesgo.littleproxy.extras.SelfSignedMitmManager;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpObject;

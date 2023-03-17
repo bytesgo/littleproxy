@@ -5,6 +5,9 @@ import io.netty.handler.codec.http.HttpRequest;
 import java.util.Queue;
 
 import javax.net.ssl.SSLEngine;
+import com.bytesgo.littleproxy.ChainedProxy;
+import com.bytesgo.littleproxy.ChainedProxyManager;
+import com.bytesgo.littleproxy.TransportProtocol;
 
 /**
  * Tests a proxy chained to a downstream proxy with an untrusted SSL cert. When

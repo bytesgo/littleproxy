@@ -1,8 +1,9 @@
 package org.littleshoot.proxy.impl;
 
 import org.junit.Test;
-import org.littleshoot.proxy.HostResolver;
-
+import com.bytesgo.littleproxy.HostResolver;
+import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.impl.ProxyToServerConnection;
 import java.net.UnknownHostException;
 
 import static org.mockito.Mockito.mock;

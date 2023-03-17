@@ -10,12 +10,16 @@ import io.netty.handler.codec.http.HttpVersion;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.littleshoot.proxy.impl.DefaultHttpProxyServer;
 import org.littleshoot.proxy.test.SocketClientUtil;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.matchers.Times;
 import org.mockserver.model.ConnectionOptions;
-
+import com.bytesgo.littleproxy.HttpFilters;
+import com.bytesgo.littleproxy.HttpFiltersAdapter;
+import com.bytesgo.littleproxy.HttpFiltersSource;
+import com.bytesgo.littleproxy.HttpFiltersSourceAdapter;
+import com.bytesgo.littleproxy.HttpProxyServer;
+import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Locale;

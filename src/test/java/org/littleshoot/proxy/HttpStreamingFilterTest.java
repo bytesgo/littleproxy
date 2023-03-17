@@ -14,8 +14,11 @@ import org.eclipse.jetty.server.Server;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.littleshoot.proxy.impl.DefaultHttpProxyServer;
-
+import com.bytesgo.littleproxy.HttpFilters;
+import com.bytesgo.littleproxy.HttpFiltersAdapter;
+import com.bytesgo.littleproxy.HttpFiltersSourceAdapter;
+import com.bytesgo.littleproxy.HttpProxyServer;
+import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.MatcherAssert.assertThat;

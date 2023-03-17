@@ -8,8 +8,8 @@ import org.eclipse.jetty.server.Server;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.littleshoot.proxy.impl.DefaultHttpProxyServer;
-
+import com.bytesgo.littleproxy.HttpProxyServer;
+import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeFalse;

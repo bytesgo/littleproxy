@@ -1,10 +1,12 @@
 package org.littleshoot.proxy;
 
-import static org.littleshoot.proxy.TransportProtocol.*;
-
+import static com.bytesgo.littleproxy.TransportProtocol.*;
 import javax.net.ssl.SSLEngine;
-
-import org.littleshoot.proxy.extras.SelfSignedSslEngineSource;
+import com.bytesgo.littleproxy.ChainedProxy;
+import com.bytesgo.littleproxy.HttpProxyServerBootstrap;
+import com.bytesgo.littleproxy.SslEngineSource;
+import com.bytesgo.littleproxy.TransportProtocol;
+import com.bytesgo.littleproxy.extras.SelfSignedSslEngineSource;
 
 public class EncryptedUDTChainedProxyTest extends BaseChainedProxyTest {
     private final SslEngineSource sslEngineSource = new SelfSignedSslEngineSource(

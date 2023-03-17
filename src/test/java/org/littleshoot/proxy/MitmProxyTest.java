@@ -5,13 +5,14 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
-import org.littleshoot.proxy.extras.SelfSignedMitmManager;
-
 import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
-
+import com.bytesgo.littleproxy.HttpFilters;
+import com.bytesgo.littleproxy.HttpFiltersAdapter;
+import com.bytesgo.littleproxy.HttpFiltersSourceAdapter;
+import com.bytesgo.littleproxy.extras.SelfSignedMitmManager;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;

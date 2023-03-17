@@ -9,6 +9,9 @@ import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Assert;
+import com.bytesgo.littleproxy.ChainedProxy;
+import com.bytesgo.littleproxy.ChainedProxyAdapter;
+import com.bytesgo.littleproxy.ChainedProxyManager;
 
 /**
  * Tests a proxy chained to a missing downstream proxy. When the downstream

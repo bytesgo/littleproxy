@@ -1,7 +1,8 @@
 package org.littleshoot.proxy;
 
 import org.junit.Test;
-import org.littleshoot.proxy.impl.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.HttpProxyServer;
+import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
 
 public class StopProxyTest {
     @Test

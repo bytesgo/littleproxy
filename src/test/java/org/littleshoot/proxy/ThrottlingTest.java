@@ -15,8 +15,8 @@ import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.littleshoot.proxy.impl.DefaultHttpProxyServer;
-
+import com.bytesgo.littleproxy.HttpProxyServer;
+import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
 import java.io.IOException;
 
 import static org.hamcrest.Matchers.both;

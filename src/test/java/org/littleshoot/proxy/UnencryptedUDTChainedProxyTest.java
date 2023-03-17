@@ -1,6 +1,9 @@
 package org.littleshoot.proxy;
 
-import static org.littleshoot.proxy.TransportProtocol.*;
+import static com.bytesgo.littleproxy.TransportProtocol.*;
+import com.bytesgo.littleproxy.ChainedProxy;
+import com.bytesgo.littleproxy.HttpProxyServerBootstrap;
+import com.bytesgo.littleproxy.TransportProtocol;
 
 public class UnencryptedUDTChainedProxyTest extends BaseChainedProxyTest {
     @Override

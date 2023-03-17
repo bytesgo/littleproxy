@@ -1,7 +1,5 @@
 package org.littleshoot.proxy.test;
 
-import org.littleshoot.proxy.HttpProxyServer;
-
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +9,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
+import com.bytesgo.littleproxy.HttpProxyServer;
 
 /**
  * Utilities for interacting with the proxy server using sockets.

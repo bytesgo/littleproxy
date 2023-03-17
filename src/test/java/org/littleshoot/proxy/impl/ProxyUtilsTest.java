@@ -11,7 +11,7 @@ import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import org.junit.Test;
-
+import com.bytesgo.littleproxy.impl.ProxyUtils;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;

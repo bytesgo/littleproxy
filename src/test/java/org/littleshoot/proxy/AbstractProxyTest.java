@@ -21,8 +21,12 @@ import org.apache.http.util.EntityUtils;
 import org.eclipse.jetty.server.Server;
 import org.junit.After;
 import org.junit.Before;
-import org.littleshoot.proxy.impl.DefaultHttpProxyServer;
-
+import com.bytesgo.littleproxy.ActivityTracker;
+import com.bytesgo.littleproxy.FlowContext;
+import com.bytesgo.littleproxy.FullFlowContext;
+import com.bytesgo.littleproxy.HttpProxyServer;
+import com.bytesgo.littleproxy.HttpProxyServerBootstrap;
+import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;

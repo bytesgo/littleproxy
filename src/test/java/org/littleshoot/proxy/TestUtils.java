@@ -18,7 +18,7 @@ import javax.net.ssl.SSLSocket;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import com.bytesgo.littleproxy.extras.SelfSignedSslEngineSource;
 import com.sun.management.UnixOperatingSystemMXBean;
 
 import org.apache.http.HttpHost;
@@ -34,7 +34,6 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
-import org.littleshoot.proxy.extras.SelfSignedSslEngineSource;
 
 public class TestUtils {
 

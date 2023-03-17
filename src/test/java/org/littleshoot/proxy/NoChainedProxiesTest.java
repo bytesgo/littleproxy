@@ -5,6 +5,8 @@ import io.netty.handler.codec.http.HttpRequest;
 import java.util.Queue;
 
 import org.junit.Test;
+import com.bytesgo.littleproxy.ChainedProxy;
+import com.bytesgo.littleproxy.ChainedProxyManager;
 
 /**
  * Tests that when there are no chained proxies, we get a bad gateway.

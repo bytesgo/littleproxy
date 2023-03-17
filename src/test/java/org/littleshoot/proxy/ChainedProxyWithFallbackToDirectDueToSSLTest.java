@@ -3,6 +3,9 @@ package org.littleshoot.proxy;
 import io.netty.handler.codec.http.HttpRequest;
 
 import java.util.Queue;
+import com.bytesgo.littleproxy.ChainedProxy;
+import com.bytesgo.littleproxy.ChainedProxyAdapter;
+import com.bytesgo.littleproxy.ChainedProxyManager;
 
 /**
  * Tests a proxy chained to a downstream proxy with an untrusted SSL cert. When

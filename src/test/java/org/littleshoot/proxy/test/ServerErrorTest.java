@@ -2,9 +2,8 @@ package org.littleshoot.proxy.test;
 
 import org.junit.After;
 import org.junit.Test;
-import org.littleshoot.proxy.HttpProxyServer;
-import org.littleshoot.proxy.impl.DefaultHttpProxyServer;
-
+import com.bytesgo.littleproxy.HttpProxyServer;
+import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
