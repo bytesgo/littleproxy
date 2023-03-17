@@ -34,7 +34,7 @@ abstract class ConnectionFlowStep {
   /**
    * Indicates whether or not to suppress the initial request. Defaults to false, can be overridden.
    * 
-   * @return
+   * @return boolean
    */
   boolean shouldSuppressInitialRequest() {
     return false;
@@ -52,7 +52,7 @@ abstract class ConnectionFlowStep {
    * </p>
    * 
    * 
-   * @return
+   * @return boolean
    */
   boolean shouldExecuteOnEventLoop() {
     return true;
@@ -61,7 +61,7 @@ abstract class ConnectionFlowStep {
   /**
    * Implement this method to actually do the work involved in this step of the flow.
    * 
-   * @return
+   * @return Future
    */
   protected abstract Future execute();
 

@@ -20,7 +20,7 @@ public class FullFlowContext extends FlowContext {
   /**
    * The host and port for the server (i.e. the ultimate endpoint).
    * 
-   * @return
+   * @return String
    */
   public String getServerHostAndPort() {
     return serverHostAndPort;
@@ -29,7 +29,7 @@ public class FullFlowContext extends FlowContext {
   /**
    * The chained proxy (if proxy chaining).
    * 
-   * @return
+   * @return ChainedProxy
    */
   public ChainedProxy getChainedProxy() {
     return chainedProxy;

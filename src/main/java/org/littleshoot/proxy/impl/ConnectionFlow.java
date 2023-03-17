@@ -39,7 +39,7 @@ class ConnectionFlow {
    * Add a {@link ConnectionFlowStep} to this flow.
    * 
    * @param step
-   * @return
+   * @return ConnectionFlow
    */
   ConnectionFlow then(ConnectionFlowStep step) {
     steps.add(step);

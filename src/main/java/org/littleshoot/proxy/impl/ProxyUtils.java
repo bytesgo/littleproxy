@@ -141,7 +141,7 @@ public class ProxyUtils {
    * @see io.netty.handler.codec.http.LastHttpContent
    * 
    * @param httpObject
-   * @return
+   * @return boolean
    * 
    */
   public static boolean isLastChunk(final HttpObject httpObject) {
@@ -154,7 +154,7 @@ public class ProxyUtils {
    * @see io.netty.handler.codec.http.FullHttpMessage
    * 
    * @param httpObject
-   * @return
+   * @return boolean
    */
   public static boolean isChunked(final HttpObject httpObject) {
     return !isLastChunk(httpObject);

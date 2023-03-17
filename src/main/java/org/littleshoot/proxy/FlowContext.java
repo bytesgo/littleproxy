@@ -26,7 +26,7 @@ public class FlowContext {
   /**
    * The address of the client.
    * 
-   * @return
+   * @return InetSocketAddress
    */
   public InetSocketAddress getClientAddress() {
     return clientAddress;
@@ -35,7 +35,7 @@ public class FlowContext {
   /**
    * If using SSL, this returns the {@link SSLSession} on the client connection.
    * 
-   * @return
+   * @return SSLSession
    */
   public SSLSession getClientSslSession() {
     return clientSslSession;

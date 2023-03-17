@@ -138,7 +138,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
    * @param serverHostAndPort
    * @param initialFilters
    * @param initialHttpRequest
-   * @return
+   * @return ProxyToServerConnection
    * @throws UnknownHostException
    */
   static ProxyToServerConnection create(DefaultHttpProxyServer proxyServer, ClientToProxyConnection clientConnection,

@@ -169,7 +169,7 @@ abstract class ProxyConnection<I extends HttpObject> extends SimpleChannelInboun
    * Implement this to handle reading the initial object (e.g. {@link HttpRequest} or {@link HttpResponse}).
    * 
    * @param httpObject
-   * @return
+   * @return ConnectionState
    */
   protected abstract ConnectionState readHTTPInitial(I httpObject);
 
@@ -444,7 +444,7 @@ abstract class ProxyConnection<I extends HttpObject> extends SimpleChannelInboun
   /**
    * Indicates whether or not this connection is saturated (i.e. not writeable).
    * 
-   * @return
+   * @return boolean
    */
   protected boolean isSaturated() {
     return !this.channel.isWritable();
@@ -454,7 +454,7 @@ abstract class ProxyConnection<I extends HttpObject> extends SimpleChannelInboun
    * Utility for checking current state.
    * 
    * @param state
-   * @return
+   * @return boolean
    */
   protected boolean is(ConnectionState state) {
     return currentState == state;
@@ -463,7 +463,7 @@ abstract class ProxyConnection<I extends HttpObject> extends SimpleChannelInboun
   /**
    * If this connection is currently in the process of going through a {@link ConnectionFlow}, this will return true.
    * 
-   * @return
+   * @return boolean
    */
   protected boolean isConnecting() {
     return currentState.isPartOfConnectionFlow();
@@ -513,7 +513,7 @@ abstract class ProxyConnection<I extends HttpObject> extends SimpleChannelInboun
    * behaviour.
    * 
    * @param httpRequest Filter attached to the give HttpRequest (if any)
-   * @return
+   * @return HttpFilters
    */
   protected HttpFilters getHttpFiltersFromProxyServer(HttpRequest httpRequest) {
     return proxyServer.getFiltersSource().filterRequest(httpRequest, ctx);

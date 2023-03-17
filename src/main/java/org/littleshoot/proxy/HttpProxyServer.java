@@ -50,7 +50,7 @@ public interface HttpProxyServer {
   /**
    * Return the address on which this proxy is listening.
    * 
-   * @return
+   * @return InetSocketAddress
    */
   InetSocketAddress getListenAddress();
 

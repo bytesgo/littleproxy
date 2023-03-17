@@ -20,7 +20,7 @@ public interface HttpProxyServerBootstrap {
    * </p>
    * 
    * @param name
-   * @return
+   * @return HttpProxyServerBootstrap
    */
   HttpProxyServerBootstrap withName(String name);
 
@@ -34,7 +34,7 @@ public interface HttpProxyServerBootstrap {
    * </p>
    * 
    * @param transportProtocol
-   * @return
+   * @return HttpProxyServerBootstrap
    */
   HttpProxyServerBootstrap withTransportProtocol(TransportProtocol transportProtocol);
 
@@ -48,7 +48,7 @@ public interface HttpProxyServerBootstrap {
    * </p>
    * 
    * @param address
-   * @return
+   * @return HttpProxyServerBootstrap
    */
   HttpProxyServerBootstrap withAddress(InetSocketAddress address);
 
@@ -62,7 +62,7 @@ public interface HttpProxyServerBootstrap {
    * </p>
    * 
    * @param port
-   * @return
+   * @return HttpProxyServerBootstrap
    */
   HttpProxyServerBootstrap withPort(int port);
 
@@ -76,7 +76,7 @@ public interface HttpProxyServerBootstrap {
    * </p>
    * 
    * @param allowLocalOnly
-   * @return
+   * @return HttpProxyServerBootstrap
    */
   HttpProxyServerBootstrap withAllowLocalOnly(boolean allowLocalOnly);
 
@@ -103,7 +103,7 @@ public interface HttpProxyServerBootstrap {
    * </p>
    * 
    * @param sslEngineSource
-   * @return
+   * @return HttpProxyServerBootstrap
    */
   HttpProxyServerBootstrap withSslEngineSource(SslEngineSource sslEngineSource);
 
@@ -118,7 +118,7 @@ public interface HttpProxyServerBootstrap {
    * </p>
    * 
    * @param authenticateSslClients
-   * @return
+   * @return HttpProxyServerBootstrap
    */
   HttpProxyServerBootstrap withAuthenticateSslClients(boolean authenticateSslClients);
 
@@ -132,7 +132,7 @@ public interface HttpProxyServerBootstrap {
    * </p>
    * 
    * @param proxyAuthenticator
-   * @return
+   * @return HttpProxyServerBootstrap
    */
   HttpProxyServerBootstrap withProxyAuthenticator(ProxyAuthenticator proxyAuthenticator);
 
@@ -146,7 +146,7 @@ public interface HttpProxyServerBootstrap {
    * </p>
    * 
    * @param chainProxyManager
-   * @return
+   * @return HttpProxyServerBootstrap
    */
   HttpProxyServerBootstrap withChainProxyManager(ChainedProxyManager chainProxyManager);
 
@@ -164,7 +164,7 @@ public interface HttpProxyServerBootstrap {
    * </p>
    * 
    * @param mitmManager
-   * @return
+   * @return HttpProxyServerBootstrap
    */
   HttpProxyServerBootstrap withManInTheMiddle(MitmManager mitmManager);
 
@@ -178,7 +178,7 @@ public interface HttpProxyServerBootstrap {
    * </p>
    * 
    * @param filtersSource
-   * @return
+   * @return HttpProxyServerBootstrap
    */
   HttpProxyServerBootstrap withFiltersSource(HttpFiltersSource filtersSource);
 
@@ -192,7 +192,7 @@ public interface HttpProxyServerBootstrap {
    * </p>
    * 
    * @param useDnsSec
-   * @return
+   * @return HttpProxyServerBootstrap
    */
   HttpProxyServerBootstrap withUseDnsSec(boolean useDnsSec);
 
@@ -206,7 +206,7 @@ public interface HttpProxyServerBootstrap {
    * </p>
    * 
    * @param transparent
-   * @return
+   * @return HttpProxyServerBootstrap
    */
   HttpProxyServerBootstrap withTransparent(boolean transparent);
 
@@ -220,7 +220,7 @@ public interface HttpProxyServerBootstrap {
    * </p>
    * 
    * @param idleConnectionTimeout
-   * @return
+   * @return HttpProxyServerBootstrap
    */
   HttpProxyServerBootstrap withIdleConnectionTimeout(int idleConnectionTimeout);
 
@@ -234,7 +234,7 @@ public interface HttpProxyServerBootstrap {
    * </p>
    * 
    * @param connectTimeout
-   * @return
+   * @return HttpProxyServerBootstrap
    */
   HttpProxyServerBootstrap withConnectTimeout(int connectTimeout);
 
@@ -242,7 +242,7 @@ public interface HttpProxyServerBootstrap {
    * Specify a custom {@link HostResolver} for resolving server addresses.
    * 
    * @param serverResolver
-   * @return
+   * @return HttpProxyServerBootstrap
    */
   HttpProxyServerBootstrap withServerResolver(HostResolver serverResolver);
 
@@ -252,7 +252,7 @@ public interface HttpProxyServerBootstrap {
    * </p>
    * 
    * @param activityTracker
-   * @return
+   * @return HttpProxyServerBootstrap
    */
   HttpProxyServerBootstrap plusActivityTracker(ActivityTracker activityTracker);
 
@@ -263,7 +263,7 @@ public interface HttpProxyServerBootstrap {
    * 
    * @param readThrottleBytesPerSecond
    * @param writeThrottleBytesPerSecond
-   * @return
+   * @return HttpProxyServerBootstrap
    */
   HttpProxyServerBootstrap withThrottling(long readThrottleBytesPerSecond, long writeThrottleBytesPerSecond);
 

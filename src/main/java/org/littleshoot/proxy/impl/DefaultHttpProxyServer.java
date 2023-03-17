@@ -146,7 +146,7 @@ public class DefaultHttpProxyServer implements HttpProxyServer {
   /**
    * Bootstrap a new {@link DefaultHttpProxyServer} starting from scratch.
    *
-   * @return
+   * @return HttpProxyServerBootstrap
    */
   public static HttpProxyServerBootstrap bootstrap() {
     return new DefaultHttpProxyServerBootstrap();
@@ -156,7 +156,7 @@ public class DefaultHttpProxyServer implements HttpProxyServer {
    * Bootstrap a new {@link DefaultHttpProxyServer} using defaults from the given file.
    *
    * @param path
-   * @return
+   * @return HttpProxyServerBootstrap
    */
   public static HttpProxyServerBootstrap bootstrapFromFile(String path) {
     final File propsFile = new File(path);
@@ -256,7 +256,7 @@ public class DefaultHttpProxyServer implements HttpProxyServer {
    * @param readThrottleBytesPerSecond
    * @param writeThrottleBytesPerSecond
    *
-   * @return
+   * @return GlobalTrafficShapingHandler
    */
   private GlobalTrafficShapingHandler createGlobalTrafficShapingHandler(TransportProtocol transportProtocol,
       long readThrottleBytesPerSecond, long writeThrottleBytesPerSecond) {

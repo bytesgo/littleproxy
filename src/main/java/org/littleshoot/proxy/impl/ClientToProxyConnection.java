@@ -202,7 +202,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
    * </p>
    * 
    * @param httpRequest
-   * @return
+   * @return ConnectionState
    */
   private ConnectionState doReadHTTPInitial(HttpRequest httpRequest) {
     // Make a copy of the original request
@@ -767,7 +767,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
    * @param req
    * @param res
    * @param httpObject
-   * @return
+   * @return boolean
    */
   private boolean shouldCloseClientConnection(HttpRequest req, HttpResponse res, HttpObject httpObject) {
     if (ProxyUtils.isChunked(res)) {
@@ -873,7 +873,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
    * </p>
    * 
    * @param request
-   * @return
+   * @return boolean
    */
   private boolean authenticationRequired(HttpRequest request) {
 
@@ -936,7 +936,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
    * Copy the given {@link HttpRequest} verbatim.
    * 
    * @param original
-   * @return
+   * @return HttpRequest
    */
   private HttpRequest copy(HttpRequest original) {
     if (original instanceof FullHttpRequest) {
@@ -1005,7 +1005,6 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
    * proxied.
    * 
    * @param httpResponse
-   * @return
    */
   private void modifyResponseHeadersToReflectProxying(HttpResponse httpResponse) {
     if (!proxyServer.isTransparent()) {
@@ -1195,7 +1194,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
    * Identify the host and port for a request.
    * 
    * @param httpRequest
-   * @return
+   * @return String
    */
   private String identifyHostAndPort(HttpRequest httpRequest) {
     String hostAndPort = ProxyUtils.parseHostAndPort(httpRequest);
