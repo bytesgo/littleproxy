@@ -24,10 +24,11 @@ import org.apache.commons.lang3.StringUtils;
 import com.bytesgo.littleproxy.ActivityTracker;
 import com.bytesgo.littleproxy.FlowContext;
 import com.bytesgo.littleproxy.FullFlowContext;
-import com.bytesgo.littleproxy.HttpFilters;
-import com.bytesgo.littleproxy.HttpFiltersAdapter;
+import com.bytesgo.littleproxy.HttpFilter;
+import com.bytesgo.littleproxy.HttpFilterAdapter;
 import com.bytesgo.littleproxy.ProxyAuthenticator;
 import com.bytesgo.littleproxy.SslEngineSource;
+import com.bytesgo.littleproxy.utils.ProxyUtils;
 import com.google.common.io.BaseEncoding;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -70,7 +71,7 @@ import io.netty.util.concurrent.GenericFutureListener;
  * 
  * <p>
  * As the ProxyToServerConnections receive responses from their servers, they feed these back to the client by calling
- * {@link #respond(ProxyToServerConnection, HttpFilters, HttpRequest, HttpResponse, HttpObject)} .
+ * {@link #respond(ProxyToServerConnection, HttpFilter, HttpRequest, HttpResponse, HttpObject)} .
  * </p>
  */
 public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
@@ -114,7 +115,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
   /**
    * The current filters to apply to incoming requests/chunks.
    */
-  private volatile HttpFilters currentFilters = HttpFiltersAdapter.NOOP_FILTER;
+  private volatile HttpFilter currentFilters = HttpFilterAdapter.NOOP_FILTER;
 
   private volatile SSLSession clientSslSession;
 
@@ -210,11 +211,11 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
 
     // Set up our filters based on the original request. If the HttpFiltersSource returns null (meaning the request/response
     // should not be filtered), fall back to the default no-op filter source.
-    HttpFilters filterInstance = proxyServer.getFiltersSource().filterRequest(currentRequest, ctx);
+    HttpFilter filterInstance = proxyServer.getFiltersSource().filterRequest(currentRequest, ctx);
     if (filterInstance != null) {
       currentFilters = filterInstance;
     } else {
-      currentFilters = HttpFiltersAdapter.NOOP_FILTER;
+      currentFilters = HttpFilterAdapter.NOOP_FILTER;
     }
 
     // Send the request through the clientToProxyRequest filter, and respond with the short-circuit response if required
@@ -387,7 +388,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
    *        initial HttpResponse object that came in before the other chunks)
    * @param httpObject the data with which to respond
    */
-  void respond(ProxyToServerConnection serverConnection, HttpFilters filters, HttpRequest currentHttpRequest,
+  void respond(ProxyToServerConnection serverConnection, HttpFilter filters, HttpRequest currentHttpRequest,
       HttpResponse currentHttpResponse, HttpObject httpObject) {
     // we are sending a response to the client, so we are done handling this request
     this.currentRequest = null;
@@ -1143,7 +1144,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
 
   /**
    * Responds to the client with the specified "short-circuit" response. The response will be sent through the
-   * {@link HttpFilters#proxyToClientResponse(HttpObject)} filter method before writing it to the client. The client will
+   * {@link HttpFilter#proxyToClientResponse(HttpObject)} filter method before writing it to the client. The client will
    * not be disconnected, unless the response includes a "Connection: close" header, or the filter returns a null
    * HttpResponse (in which case no response will be written to the client and the connection will be disconnected
    * immediately). If the response is not a Bad Gateway or Gateway Timeout response, the response's headers will be

@@ -5,12 +5,12 @@ package com.bytesgo.littleproxy.impl;
  * {@link io.netty.channel.EventLoopGroup} used by the proxy.
  */
 public class ThreadPoolConfiguration {
-  private int acceptorThreads = ServerGroup.DEFAULT_INCOMING_ACCEPTOR_THREADS;
-  private int clientToProxyWorkerThreads = ServerGroup.DEFAULT_INCOMING_WORKER_THREADS;
-  private int proxyToServerWorkerThreads = ServerGroup.DEFAULT_OUTGOING_WORKER_THREADS;
+  private int acceptorThreadSize = ServerGroup.DEFAULT_INCOMING_ACCEPTOR_THREADS;
+  private int clientToProxyWorkerThreadSize = ServerGroup.DEFAULT_INCOMING_WORKER_THREADS;
+  private int proxyToServerWorkerThreadSize = ServerGroup.DEFAULT_OUTGOING_WORKER_THREADS;
 
-  public int getClientToProxyWorkerThreads() {
-    return clientToProxyWorkerThreads;
+  public int getClientToProxyWorkerThreadSize() {
+    return clientToProxyWorkerThreadSize;
   }
 
   /**
@@ -20,13 +20,13 @@ public class ThreadPoolConfiguration {
    * @param clientToProxyWorkerThreads number of client-to-proxy worker threads to create
    * @return this thread pool configuration instance, for chaining
    */
-  public ThreadPoolConfiguration withClientToProxyWorkerThreads(int clientToProxyWorkerThreads) {
-    this.clientToProxyWorkerThreads = clientToProxyWorkerThreads;
+  public ThreadPoolConfiguration withClientToProxyWorkerThreadSize(int clientToProxyWorkerThreadSize) {
+    this.clientToProxyWorkerThreadSize = clientToProxyWorkerThreadSize;
     return this;
   }
 
-  public int getAcceptorThreads() {
-    return acceptorThreads;
+  public int getAcceptorThreadSize() {
+    return acceptorThreadSize;
   }
 
   /**
@@ -37,13 +37,13 @@ public class ThreadPoolConfiguration {
    * @param acceptorThreads number of acceptor threads to create
    * @return this thread pool configuration instance, for chaining
    */
-  public ThreadPoolConfiguration withAcceptorThreads(int acceptorThreads) {
-    this.acceptorThreads = acceptorThreads;
+  public ThreadPoolConfiguration withAcceptorThreadSize(int acceptorThreadSize) {
+    this.acceptorThreadSize = acceptorThreadSize;
     return this;
   }
 
-  public int getProxyToServerWorkerThreads() {
-    return proxyToServerWorkerThreads;
+  public int getProxyToServerWorkerThreadSize() {
+    return proxyToServerWorkerThreadSize;
   }
 
   /**
@@ -54,8 +54,8 @@ public class ThreadPoolConfiguration {
    * @param proxyToServerWorkerThreads number of proxy-to-server worker threads to create
    * @return this thread pool configuration instance, for chaining
    */
-  public ThreadPoolConfiguration withProxyToServerWorkerThreads(int proxyToServerWorkerThreads) {
-    this.proxyToServerWorkerThreads = proxyToServerWorkerThreads;
+  public ThreadPoolConfiguration withProxyToServerWorkerThreadSize(int proxyToServerWorkerThreadSize) {
+    this.proxyToServerWorkerThreadSize = proxyToServerWorkerThreadSize;
     return this;
   }
 

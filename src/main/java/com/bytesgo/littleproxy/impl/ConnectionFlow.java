@@ -1,10 +1,9 @@
 package com.bytesgo.littleproxy.impl;
 
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
-
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
 /**
  * Coordinates the various steps involved in establishing a connection, such as establishing a socket connection, SSL

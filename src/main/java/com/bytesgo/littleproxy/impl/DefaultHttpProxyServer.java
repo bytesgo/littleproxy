@@ -18,9 +18,9 @@ import com.bytesgo.littleproxy.ChainedProxyManager;
 import com.bytesgo.littleproxy.DefaultHostResolver;
 import com.bytesgo.littleproxy.DnsSecServerResolver;
 import com.bytesgo.littleproxy.HostResolver;
-import com.bytesgo.littleproxy.HttpFilters;
-import com.bytesgo.littleproxy.HttpFiltersSource;
-import com.bytesgo.littleproxy.HttpFiltersSourceAdapter;
+import com.bytesgo.littleproxy.HttpFilter;
+import com.bytesgo.littleproxy.HttpFilterSource;
+import com.bytesgo.littleproxy.HttpFilterSourceAdapter;
 import com.bytesgo.littleproxy.HttpProxyServer;
 import com.bytesgo.littleproxy.HttpProxyServerBootstrap;
 import com.bytesgo.littleproxy.MitmManager;
@@ -28,6 +28,7 @@ import com.bytesgo.littleproxy.ProxyAuthenticator;
 import com.bytesgo.littleproxy.SslEngineSource;
 import com.bytesgo.littleproxy.TransportProtocol;
 import com.bytesgo.littleproxy.UnknownTransportProtocolException;
+import com.bytesgo.littleproxy.utils.ProxyUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFactory;
@@ -101,7 +102,7 @@ public class DefaultHttpProxyServer implements HttpProxyServer {
   private final ProxyAuthenticator proxyAuthenticator;
   private final ChainedProxyManager chainProxyManager;
   private final MitmManager mitmManager;
-  private final HttpFiltersSource filtersSource;
+  private final HttpFilterSource filtersSource;
   private final boolean transparent;
   private volatile int connectTimeout;
   private volatile int idleConnectionTimeout;
@@ -186,7 +187,7 @@ public class DefaultHttpProxyServer implements HttpProxyServer {
    *        authentication per the provided {@link ProxyAuthenticator}
    * @param chainProxyManager The proxy to send requests to if chaining proxies. Typically <code>null</code>.
    * @param mitmManager The {@link MitmManager} to use for man in the middle'ing CONNECT requests
-   * @param filtersSource Source for {@link HttpFilters}
+   * @param filtersSource Source for {@link HttpFilter}
    * @param transparent If true, this proxy will run as a transparent proxy. This will not modify the response, and will
    *        only modify the request to amend the URI if the target is the origin server (to comply with RFC 7230 section
    *        5.3.1).
@@ -204,7 +205,7 @@ public class DefaultHttpProxyServer implements HttpProxyServer {
    */
   private DefaultHttpProxyServer(ServerGroup serverGroup, TransportProtocol transportProtocol, InetSocketAddress requestedAddress,
       SslEngineSource sslEngineSource, boolean authenticateSslClients, ProxyAuthenticator proxyAuthenticator,
-      ChainedProxyManager chainProxyManager, MitmManager mitmManager, HttpFiltersSource filtersSource, boolean transparent,
+      ChainedProxyManager chainProxyManager, MitmManager mitmManager, HttpFilterSource filtersSource, boolean transparent,
       int idleConnectionTimeout, Collection<ActivityTracker> activityTrackers, int connectTimeout, HostResolver serverResolver,
       long readThrottleBytesPerSecond, long writeThrottleBytesPerSecond, InetSocketAddress localAddress, String proxyAlias,
       int maxInitialLineLength, int maxHeaderSize, int maxChunkSize, boolean allowRequestsToOriginServer) {
@@ -509,7 +510,7 @@ public class DefaultHttpProxyServer implements HttpProxyServer {
     return proxyAuthenticator;
   }
 
-  public HttpFiltersSource getFiltersSource() {
+  public HttpFilterSource getFiltersSource() {
     return filtersSource;
   }
 
@@ -539,7 +540,7 @@ public class DefaultHttpProxyServer implements HttpProxyServer {
     private ProxyAuthenticator proxyAuthenticator = null;
     private ChainedProxyManager chainProxyManager = null;
     private MitmManager mitmManager = null;
-    private HttpFiltersSource filtersSource = new HttpFiltersSourceAdapter();
+    private HttpFilterSource filtersSource = new HttpFilterSourceAdapter();
     private boolean transparent = false;
     private int idleConnectionTimeout = 70;
     private Collection<ActivityTracker> activityTrackers = new ConcurrentLinkedQueue<ActivityTracker>();
@@ -549,9 +550,9 @@ public class DefaultHttpProxyServer implements HttpProxyServer {
     private long writeThrottleBytesPerSecond;
     private InetSocketAddress localAddress;
     private String proxyAlias;
-    private int clientToProxyAcceptorThreads = ServerGroup.DEFAULT_INCOMING_ACCEPTOR_THREADS;
-    private int clientToProxyWorkerThreads = ServerGroup.DEFAULT_INCOMING_WORKER_THREADS;
-    private int proxyToServerWorkerThreads = ServerGroup.DEFAULT_OUTGOING_WORKER_THREADS;
+    private int clientToProxyAcceptorThreadSize = ServerGroup.DEFAULT_INCOMING_ACCEPTOR_THREADS;
+    private int clientToProxyWorkerThreadSize = ServerGroup.DEFAULT_INCOMING_WORKER_THREADS;
+    private int proxyToServerWorkerThreadSize = ServerGroup.DEFAULT_OUTGOING_WORKER_THREADS;
     private int maxInitialLineLength = MAX_INITIAL_LINE_LENGTH_DEFAULT;
     private int maxHeaderSize = MAX_HEADER_SIZE_DEFAULT;
     private int maxChunkSize = MAX_CHUNK_SIZE_DEFAULT;
@@ -562,7 +563,7 @@ public class DefaultHttpProxyServer implements HttpProxyServer {
     private DefaultHttpProxyServerBootstrap(ServerGroup serverGroup, TransportProtocol transportProtocol,
         InetSocketAddress requestedAddress, SslEngineSource sslEngineSource, boolean authenticateSslClients,
         ProxyAuthenticator proxyAuthenticator, ChainedProxyManager chainProxyManager, MitmManager mitmManager,
-        HttpFiltersSource filtersSource, boolean transparent, int idleConnectionTimeout, Collection<ActivityTracker> activityTrackers,
+        HttpFilterSource filtersSource, boolean transparent, int idleConnectionTimeout, Collection<ActivityTracker> activityTrackers,
         int connectTimeout, HostResolver serverResolver, long readThrottleBytesPerSecond, long writeThrottleBytesPerSecond,
         InetSocketAddress localAddress, String proxyAlias, int maxInitialLineLength, int maxHeaderSize, int maxChunkSize,
         boolean allowRequestToOriginServer) {
@@ -694,7 +695,7 @@ public class DefaultHttpProxyServer implements HttpProxyServer {
     }
 
     @Override
-    public HttpProxyServerBootstrap withFiltersSource(HttpFiltersSource filtersSource) {
+    public HttpProxyServerBootstrap withFiltersSource(HttpFilterSource filtersSource) {
       this.filtersSource = filtersSource;
       return this;
     }
@@ -777,9 +778,9 @@ public class DefaultHttpProxyServer implements HttpProxyServer {
 
     @Override
     public HttpProxyServerBootstrap withThreadPoolConfiguration(ThreadPoolConfiguration configuration) {
-      this.clientToProxyAcceptorThreads = configuration.getAcceptorThreads();
-      this.clientToProxyWorkerThreads = configuration.getClientToProxyWorkerThreads();
-      this.proxyToServerWorkerThreads = configuration.getProxyToServerWorkerThreads();
+      this.clientToProxyAcceptorThreadSize = configuration.getAcceptorThreadSize();
+      this.clientToProxyWorkerThreadSize = configuration.getClientToProxyWorkerThreadSize();
+      this.proxyToServerWorkerThreadSize = configuration.getProxyToServerWorkerThreadSize();
       return this;
     }
 
@@ -789,7 +790,7 @@ public class DefaultHttpProxyServer implements HttpProxyServer {
       if (this.serverGroup != null) {
         serverGroup = this.serverGroup;
       } else {
-        serverGroup = new ServerGroup(name, clientToProxyAcceptorThreads, clientToProxyWorkerThreads, proxyToServerWorkerThreads);
+        serverGroup = new ServerGroup(name, clientToProxyAcceptorThreadSize, clientToProxyWorkerThreadSize, proxyToServerWorkerThreadSize);
       }
 
       return new DefaultHttpProxyServer(serverGroup, transportProtocol, determineListenAddress(), sslEngineSource, authenticateSslClients,

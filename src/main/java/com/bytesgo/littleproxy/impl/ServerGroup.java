@@ -1,12 +1,5 @@
 package com.bytesgo.littleproxy.impl;
 
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.udt.nio.NioUdtProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.bytesgo.littleproxy.HttpProxyServer;
-import com.bytesgo.littleproxy.TransportProtocol;
-import com.bytesgo.littleproxy.UnknownTransportProtocolException;
 import java.nio.channels.spi.SelectorProvider;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -14,6 +7,14 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.bytesgo.littleproxy.HttpProxyServer;
+import com.bytesgo.littleproxy.TransportProtocol;
+import com.bytesgo.littleproxy.UnknownTransportProtocolException;
+import com.bytesgo.littleproxy.utils.ProxyUtils;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.udt.nio.NioUdtProvider;
 
 /**
  * Manages thread pools for one or more proxy server instances. When servers are created, they must register with the
@@ -55,9 +56,9 @@ public class ServerGroup {
    */
   private final int serverGroupId;
 
-  private final int incomingAcceptorThreads;
-  private final int incomingWorkerThreads;
-  private final int outgoingWorkerThreads;
+  private final int incomingAcceptorThreadSize;
+  private final int incomingWorkerThreadSize;
+  private final int outgoingWorkerThreadSize;
 
   /**
    * List of all servers registered to use this ServerGroup. Any access to this list should be synchronized using the
@@ -66,11 +67,11 @@ public class ServerGroup {
   public final List<HttpProxyServer> registeredServers = new ArrayList<HttpProxyServer>(1);
 
   /**
-   * A mapping of {@link TransportProtocol}s to their initialized {@link ProxyThreadPools}. Each transport uses a
+   * A mapping of {@link TransportProtocol}s to their initialized {@link ProxyThreadPool}. Each transport uses a
    * different thread pool, since the initialization parameters are different.
    */
-  private final EnumMap<TransportProtocol, ProxyThreadPools> protocolThreadPools =
-      new EnumMap<TransportProtocol, ProxyThreadPools>(TransportProtocol.class);
+  private final EnumMap<TransportProtocol, ProxyThreadPool> protocolThreadPools =
+      new EnumMap<TransportProtocol, ProxyThreadPool>(TransportProtocol.class);
 
   /**
    * A mapping of selector providers to transport protocols. Avoids special-casing each transport protocol during
@@ -108,9 +109,9 @@ public class ServerGroup {
   public ServerGroup(String name, int incomingAcceptorThreads, int incomingWorkerThreads, int outgoingWorkerThreads) {
     this.name = name;
     this.serverGroupId = serverGroupCount.getAndIncrement();
-    this.incomingAcceptorThreads = incomingAcceptorThreads;
-    this.incomingWorkerThreads = incomingWorkerThreads;
-    this.outgoingWorkerThreads = outgoingWorkerThreads;
+    this.incomingAcceptorThreadSize = incomingAcceptorThreads;
+    this.incomingWorkerThreadSize = incomingWorkerThreads;
+    this.outgoingWorkerThreadSize = outgoingWorkerThreads;
   }
 
   /**
@@ -119,7 +120,7 @@ public class ServerGroup {
   private final Object THREAD_POOL_INIT_LOCK = new Object();
 
   /**
-   * Retrieves the {@link ProxyThreadPools} for the specified transport protocol. Lazily initializes the thread pools for
+   * Retrieves the {@link ProxyThreadPool} for the specified transport protocol. Lazily initializes the thread pools for
    * the transport protocol if they have not yet been initialized. If the protocol has already been initialized, this
    * method returns immediately, without synchronization. If initialization is necessary, the initialization process
    * creates the acceptor and worker threads necessary to service requests to/from the proxy.
@@ -129,21 +130,21 @@ public class ServerGroup {
    * @param protocol transport protocol to retrieve thread pools for
    * @return thread pools for the specified transport protocol
    */
-  private ProxyThreadPools getThreadPoolsForProtocol(TransportProtocol protocol) {
+  private ProxyThreadPool getThreadPoolsForProtocol(TransportProtocol protocol) {
     // if the thread pools have not been initialized for this protocol, initialize them
     if (protocolThreadPools.get(protocol) == null) {
       synchronized (THREAD_POOL_INIT_LOCK) {
         if (protocolThreadPools.get(protocol) == null) {
           log.debug("Initializing thread pools for {} with {} acceptor threads, {} incoming worker threads, and {} outgoing worker threads",
-              protocol, incomingAcceptorThreads, incomingWorkerThreads, outgoingWorkerThreads);
+              protocol, incomingAcceptorThreadSize, incomingWorkerThreadSize, outgoingWorkerThreadSize);
 
           SelectorProvider selectorProvider = TRANSPORT_PROTOCOL_SELECTOR_PROVIDERS.get(protocol);
           if (selectorProvider == null) {
             throw new UnknownTransportProtocolException(protocol);
           }
 
-          ProxyThreadPools threadPools = new ProxyThreadPools(selectorProvider, incomingAcceptorThreads, incomingWorkerThreads,
-              outgoingWorkerThreads, name, serverGroupId);
+          ProxyThreadPool threadPools = new ProxyThreadPool(selectorProvider, incomingAcceptorThreadSize, incomingWorkerThreadSize,
+              outgoingWorkerThreadSize, name, serverGroupId);
           protocolThreadPools.put(protocol, threadPools);
         }
       }
@@ -214,7 +215,7 @@ public class ServerGroup {
     // for both TCP and UDP transport protocols.
     List<EventLoopGroup> allEventLoopGroups = new ArrayList<EventLoopGroup>();
 
-    for (ProxyThreadPools threadPools : protocolThreadPools.values()) {
+    for (ProxyThreadPool threadPools : protocolThreadPools.values()) {
       allEventLoopGroups.addAll(threadPools.getAllEventLoops());
     }
 

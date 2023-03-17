@@ -1,10 +1,9 @@
 package com.bytesgo.littleproxy.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A ThreadFactory that adds LittleProxy-specific information to the threads' names.

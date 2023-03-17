@@ -19,10 +19,11 @@ import com.bytesgo.littleproxy.ChainedProxy;
 import com.bytesgo.littleproxy.ChainedProxyAdapter;
 import com.bytesgo.littleproxy.ChainedProxyManager;
 import com.bytesgo.littleproxy.FullFlowContext;
-import com.bytesgo.littleproxy.HttpFilters;
+import com.bytesgo.littleproxy.HttpFilter;
 import com.bytesgo.littleproxy.MitmManager;
 import com.bytesgo.littleproxy.TransportProtocol;
 import com.bytesgo.littleproxy.UnknownTransportProtocolException;
+import com.bytesgo.littleproxy.utils.ProxyUtils;
 import com.google.common.net.HostAndPort;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -83,7 +84,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
   /**
    * The filters to apply to response/chunks received from server.
    */
-  private volatile HttpFilters currentFilters;
+  private volatile HttpFilter currentFilters;
 
   /**
    * Encapsulates the flow for establishing a connection, which can vary depending on how things are configured.
@@ -142,7 +143,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
    * @throws UnknownHostException
    */
   static ProxyToServerConnection create(DefaultHttpProxyServer proxyServer, ClientToProxyConnection clientConnection,
-      String serverHostAndPort, HttpFilters initialFilters, HttpRequest initialHttpRequest,
+      String serverHostAndPort, HttpFilter initialFilters, HttpRequest initialHttpRequest,
       GlobalTrafficShapingHandler globalTrafficShapingHandler) throws UnknownHostException {
     Queue<ChainedProxy> chainedProxies = new ConcurrentLinkedQueue<ChainedProxy>();
     ChainedProxyManager chainedProxyManager = proxyServer.getChainProxyManager();
@@ -158,7 +159,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
   }
 
   private ProxyToServerConnection(DefaultHttpProxyServer proxyServer, ClientToProxyConnection clientConnection, String serverHostAndPort,
-      ChainedProxy chainedProxy, Queue<ChainedProxy> availableChainedProxies, HttpFilters initialFilters,
+      ChainedProxy chainedProxy, Queue<ChainedProxy> availableChainedProxies, HttpFilter initialFilters,
       GlobalTrafficShapingHandler globalTrafficShapingHandler) throws UnknownHostException {
     super(DISCONNECTED, proxyServer, true);
     this.clientConnection = clientConnection;
@@ -273,7 +274,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
    * @param msg
    * @param filters
    */
-  void write(Object msg, HttpFilters filters) {
+  void write(Object msg, HttpFilter filters) {
     this.currentFilters = filters;
     write(msg);
   }
@@ -453,7 +454,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
   }
 
   @Override
-  protected HttpFilters getHttpFiltersFromProxyServer(HttpRequest httpRequest) {
+  protected HttpFilter getHttpFiltersFromProxyServer(HttpRequest httpRequest) {
     return currentFilters;
   }
 

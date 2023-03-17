@@ -169,7 +169,7 @@ public interface HttpProxyServerBootstrap {
 
   /**
    * <p>
-   * Specify a {@link HttpFiltersSource} to use for filtering requests and/or responses through this proxy.
+   * Specify a {@link HttpFilterSource} to use for filtering requests and/or responses through this proxy.
    * </p>
    * 
    * <p>
@@ -179,7 +179,7 @@ public interface HttpProxyServerBootstrap {
    * @param filtersSource
    * @return HttpProxyServerBootstrap
    */
-  HttpProxyServerBootstrap withFiltersSource(HttpFiltersSource filtersSource);
+  HttpProxyServerBootstrap withFiltersSource(HttpFilterSource filtersSource);
 
   /**
    * <p>
