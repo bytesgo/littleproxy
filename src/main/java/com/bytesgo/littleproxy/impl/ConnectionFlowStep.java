@@ -9,7 +9,7 @@ import io.netty.util.concurrent.Future;
  */
 abstract class ConnectionFlowStep {
   private final ProxyConnectionLogger LOG;
-  private final ProxyConnection connection;
+  private final ProxyConnection<?> connection;
   private final ConnectionState state;
 
   /**
@@ -18,14 +18,14 @@ abstract class ConnectionFlowStep {
    * @param connection the connection that we're working on
    * @param state the state that the connection will show while we're processing this step
    */
-  ConnectionFlowStep(ProxyConnection connection, ConnectionState state) {
+  ConnectionFlowStep(ProxyConnection<?> connection, ConnectionState state) {
     super();
     this.connection = connection;
     this.state = state;
     this.LOG = connection.getLOG();
   }
 
-  ProxyConnection getConnection() {
+  ProxyConnection<?> getConnection() {
     return connection;
   }
 

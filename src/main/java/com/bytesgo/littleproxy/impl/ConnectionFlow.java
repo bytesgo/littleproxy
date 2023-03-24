@@ -97,7 +97,7 @@ public class ConnectionFlow {
    * </ol>
    */
   private void processCurrentStep() {
-    final ProxyConnection connection = currentStep.getConnection();
+    final ProxyConnection<?> connection = currentStep.getConnection();
     final ProxyConnectionLogger LOG = connection.getLOG();
 
     LOG.debug("Processing connection flow step: {}", currentStep);
@@ -123,8 +123,8 @@ public class ConnectionFlow {
    */
   @SuppressWarnings("unchecked")
   private void doProcessCurrentStep(final ProxyConnectionLogger LOG) {
-    currentStep.execute().addListener(new GenericFutureListener<Future<?>>() {
-      public void operationComplete(io.netty.util.concurrent.Future<?> future) throws Exception {
+    currentStep.execute().addListener(new GenericFutureListener<Future<Void>>() {
+      public void operationComplete(Future<Void> future) throws Exception {
         synchronized (connectLock) {
           if (future.isSuccess()) {
             LOG.debug("ConnectionFlowStep succeeded");
@@ -153,12 +153,11 @@ public class ConnectionFlow {
    * Called when the flow fails at some {@link ConnectionFlowStep}. Disconnects the {@link ProxyToServerConnection} and
    * informs the {@link ClientToProxyConnection} that our connection failed.
    */
-  @SuppressWarnings("unchecked")
   void fail(final Throwable cause) {
     final ConnectionState lastStateBeforeFailure = serverConnection.getCurrentState();
-    serverConnection.disconnect().addListener(new GenericFutureListener() {
+    serverConnection.disconnect().addListener(new GenericFutureListener<Future<Void>>() {
       @Override
-      public void operationComplete(Future future) throws Exception {
+      public void operationComplete(Future<Void> future) throws Exception {
         synchronized (connectLock) {
           if (!clientConnection.serverConnectionFailed(serverConnection, lastStateBeforeFailure, cause)) {
             // the connection to the server failed and we are not retrying, so transition to the

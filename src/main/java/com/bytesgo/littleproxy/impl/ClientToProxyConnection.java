@@ -34,6 +34,7 @@ import com.google.common.io.BaseEncoding;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.DefaultHttpRequest;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -456,7 +457,8 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
       return true;
     }
 
-    protected Future<?> execute() {
+    @Override
+    protected ChannelFuture execute() {
       LOG.debug("Responding with CONNECT successful");
       HttpResponse response = ProxyUtils.createFullHttpResponse(HttpVersion.HTTP_1_1, CONNECTION_ESTABLISHED);
       response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
