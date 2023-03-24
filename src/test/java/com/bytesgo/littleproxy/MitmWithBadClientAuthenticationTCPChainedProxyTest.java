@@ -1,13 +1,7 @@
 package com.bytesgo.littleproxy;
 
-import static com.bytesgo.littleproxy.TransportProtocol.*;
 import javax.net.ssl.SSLEngine;
-
-import org.junit.Ignore;
-import com.bytesgo.littleproxy.ChainedProxy;
-import com.bytesgo.littleproxy.HttpProxyServerBootstrap;
-import com.bytesgo.littleproxy.SslEngineSource;
-import com.bytesgo.littleproxy.TransportProtocol;
+import com.bytesgo.littleproxy.enums.TransportProtocol;
 import com.bytesgo.littleproxy.extras.SelfSignedSslEngineSource;
 
 /**
@@ -30,7 +24,7 @@ public class MitmWithBadClientAuthenticationTCPChainedProxyTest extends
     @Override
     protected HttpProxyServerBootstrap upstreamProxy() {
         return super.upstreamProxy()
-                .withTransportProtocol(TCP)
+                .withTransportProtocol(TransportProtocol.TCP)
                 .withSslEngineSource(serverSslEngineSource);
     }
 

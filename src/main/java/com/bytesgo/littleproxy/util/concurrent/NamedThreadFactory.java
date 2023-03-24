@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 /**
  * A ThreadFactory that adds LittleProxy-specific information to the threads' names.
  */
-public class CategorizedThreadFactory implements ThreadFactory {
-  private static final Logger log = LoggerFactory.getLogger(CategorizedThreadFactory.class);
+public class NamedThreadFactory implements ThreadFactory {
+  private static final Logger log = LoggerFactory.getLogger(NamedThreadFactory.class);
 
   private final String name;
   private final String category;
@@ -35,7 +35,7 @@ public class CategorizedThreadFactory implements ThreadFactory {
    * @param uniqueServerGroupId a unique number for the server group creating this thread factory, to differentiate
    *        multiple proxy instances with the same name
    */
-  public CategorizedThreadFactory(String name, String category, int uniqueServerGroupId) {
+  public NamedThreadFactory(String name, String category, int uniqueServerGroupId) {
     this.category = category;
     this.name = name;
     this.uniqueServerGroupId = uniqueServerGroupId;

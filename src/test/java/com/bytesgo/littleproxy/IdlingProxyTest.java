@@ -1,8 +1,7 @@
 package com.bytesgo.littleproxy;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 /**
  * Tests just a single basic proxy.

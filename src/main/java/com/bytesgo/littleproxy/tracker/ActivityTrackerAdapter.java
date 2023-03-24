@@ -1,4 +1,4 @@
-package com.bytesgo.littleproxy;
+package com.bytesgo.littleproxy.tracker;
 
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
@@ -6,6 +6,8 @@ import io.netty.handler.codec.http.HttpResponse;
 import java.net.InetSocketAddress;
 
 import javax.net.ssl.SSLSession;
+import com.bytesgo.littleproxy.FlowContext;
+import com.bytesgo.littleproxy.FullFlowContext;
 
 /**
  * Adapter of {@link ActivityTracker} interface that provides default no-op implementations of all methods.

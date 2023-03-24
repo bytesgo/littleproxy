@@ -1,5 +1,10 @@
-package com.bytesgo.littleproxy.impl;
+package com.bytesgo.littleproxy.enums;
 
+/**
+ * 
+ * @author leeyazhou
+ *
+ */
 public enum ConnectionState {
   /**
    * Connection attempting to connect.

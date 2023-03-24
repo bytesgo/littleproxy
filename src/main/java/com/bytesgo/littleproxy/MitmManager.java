@@ -1,9 +1,8 @@
 package com.bytesgo.littleproxy;
 
-import io.netty.handler.codec.http.HttpRequest;
-
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLSession;
+import io.netty.handler.codec.http.HttpRequest;
 
 /**
  * MITMManagers encapsulate the logic required for letting LittleProxy act as a man in the middle for HTTPS requests.

@@ -2,7 +2,7 @@ package com.bytesgo.littleproxy.impl;
 
 import java.nio.channels.spi.SelectorProvider;
 import java.util.List;
-import com.bytesgo.littleproxy.util.concurrent.CategorizedThreadFactory;
+import com.bytesgo.littleproxy.util.concurrent.NamedThreadFactory;
 import com.google.common.collect.ImmutableList;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -33,14 +33,14 @@ public class ProxyThreadPool {
   public ProxyThreadPool(SelectorProvider selectorProvider, int incomingAcceptorThreads, int incomingWorkerThreads,
       int outgoingWorkerThreads, String serverGroupName, int serverGroupId) {
     clientToProxyAcceptorPool = new NioEventLoopGroup(incomingAcceptorThreads,
-        new CategorizedThreadFactory(serverGroupName, "ClientToProxyAcceptor", serverGroupId), selectorProvider);
+        new NamedThreadFactory(serverGroupName, "ClientToProxyAcceptor", serverGroupId), selectorProvider);
 
     clientToProxyWorkerPool = new NioEventLoopGroup(incomingWorkerThreads,
-        new CategorizedThreadFactory(serverGroupName, "ClientToProxyWorker", serverGroupId), selectorProvider);
+        new NamedThreadFactory(serverGroupName, "ClientToProxyWorker", serverGroupId), selectorProvider);
     clientToProxyWorkerPool.setIoRatio(90);
 
     proxyToServerWorkerPool = new NioEventLoopGroup(outgoingWorkerThreads,
-        new CategorizedThreadFactory(serverGroupName, "ProxyToServerWorker", serverGroupId), selectorProvider);
+        new NamedThreadFactory(serverGroupName, "ProxyToServerWorker", serverGroupId), selectorProvider);
     proxyToServerWorkerPool.setIoRatio(90);
   }
 

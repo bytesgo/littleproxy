@@ -1,5 +1,26 @@
 package com.bytesgo.littleproxy;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
+import java.io.IOException;
+import java.net.Socket;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockserver.integration.ClientAndServer;
+import org.mockserver.matchers.Times;
+import org.mockserver.model.ConnectionOptions;
+import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.test.SocketClientUtil;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpObject;
@@ -7,30 +28,6 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockserver.integration.ClientAndServer;
-import org.mockserver.matchers.Times;
-import org.mockserver.model.ConnectionOptions;
-import com.bytesgo.littleproxy.HttpFilter;
-import com.bytesgo.littleproxy.HttpFilterAdapter;
-import com.bytesgo.littleproxy.HttpFilterSource;
-import com.bytesgo.littleproxy.HttpFilterSourceAdapter;
-import com.bytesgo.littleproxy.HttpProxyServer;
-import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
-import com.bytesgo.littleproxy.test.SocketClientUtil;
-import java.io.IOException;
-import java.net.Socket;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
 
 /**
  * This class tests the proxy's keep alive/connection closure behavior.

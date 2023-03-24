@@ -3,13 +3,9 @@ package com.bytesgo.littleproxy;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-
 import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Set;
-import com.bytesgo.littleproxy.HttpFilter;
-import com.bytesgo.littleproxy.HttpFilterAdapter;
-import com.bytesgo.littleproxy.HttpFilterSourceAdapter;
 import com.bytesgo.littleproxy.extras.SelfSignedMitmManager;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpMethod;

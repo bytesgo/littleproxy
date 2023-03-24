@@ -1,5 +1,9 @@
 package com.bytesgo.littleproxy;
 
+import static org.hamcrest.Matchers.emptyArray;
+import static org.junit.Assert.assertThat;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -11,12 +15,7 @@ import org.junit.Test;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.matchers.Times;
 import org.mockserver.model.ConnectionOptions;
-import com.bytesgo.littleproxy.HttpProxyServer;
 import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
-import static org.hamcrest.Matchers.emptyArray;
-import static org.junit.Assert.assertThat;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
 
 /**
  * Tests the proxy's handling and manipulation of headers.

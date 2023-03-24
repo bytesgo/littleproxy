@@ -2,7 +2,6 @@ package com.bytesgo.littleproxy;
 
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-
 import org.littleshoot.dnssec4j.VerifiedAddressFactory;
 
 public class DnsSecServerResolver implements HostResolver {

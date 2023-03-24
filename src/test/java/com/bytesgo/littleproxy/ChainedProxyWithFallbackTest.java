@@ -1,17 +1,12 @@
 package com.bytesgo.littleproxy;
 
-import io.netty.handler.codec.http.HttpRequest;
-
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.junit.Assert;
-import com.bytesgo.littleproxy.ChainedProxy;
-import com.bytesgo.littleproxy.ChainedProxyAdapter;
-import com.bytesgo.littleproxy.ChainedProxyManager;
+import io.netty.handler.codec.http.HttpRequest;
 
 /**
  * Tests a proxy chained to a missing downstream proxy. When the downstream

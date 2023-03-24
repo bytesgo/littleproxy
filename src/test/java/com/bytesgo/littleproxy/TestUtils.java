@@ -10,7 +10,6 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
@@ -18,9 +17,6 @@ import javax.net.ssl.SSLSocket;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import com.bytesgo.littleproxy.extras.SelfSignedSslEngineSource;
-import com.sun.management.UnixOperatingSystemMXBean;
-
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.params.ConnRoutePNames;
@@ -34,6 +30,8 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
+import com.bytesgo.littleproxy.extras.SelfSignedSslEngineSource;
+import com.sun.management.UnixOperatingSystemMXBean;
 
 public class TestUtils {
 

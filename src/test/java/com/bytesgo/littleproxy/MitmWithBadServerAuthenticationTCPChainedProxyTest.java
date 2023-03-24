@@ -1,56 +1,44 @@
 package com.bytesgo.littleproxy;
 
-import static com.bytesgo.littleproxy.TransportProtocol.*;
 import javax.net.ssl.SSLEngine;
-
-import org.junit.Ignore;
-import com.bytesgo.littleproxy.ChainedProxy;
-import com.bytesgo.littleproxy.HttpProxyServerBootstrap;
-import com.bytesgo.littleproxy.SslEngineSource;
-import com.bytesgo.littleproxy.TransportProtocol;
+import com.bytesgo.littleproxy.enums.TransportProtocol;
 import com.bytesgo.littleproxy.extras.SelfSignedSslEngineSource;
 
 /**
- * Tests that servers are authenticated and that if they're missing certs, we
- * get an error.
+ * Tests that servers are authenticated and that if they're missing certs, we get an error.
  */
-public class MitmWithBadServerAuthenticationTCPChainedProxyTest extends 
-        MitmWithChainedProxyTest {
-    protected final SslEngineSource serverSslEngineSource = new SelfSignedSslEngineSource(
-            "chain_proxy_keystore_1.jks");
-    
-    protected final SslEngineSource clientSslEngineSource = new SelfSignedSslEngineSource(
-            "chain_proxy_keystore_2.jks");
+public class MitmWithBadServerAuthenticationTCPChainedProxyTest extends MitmWithChainedProxyTest {
+  protected final SslEngineSource serverSslEngineSource = new SelfSignedSslEngineSource("chain_proxy_keystore_1.jks");
 
-    @Override
-    protected boolean expectBadGatewayForEverything() {
+  protected final SslEngineSource clientSslEngineSource = new SelfSignedSslEngineSource("chain_proxy_keystore_2.jks");
+
+  @Override
+  protected boolean expectBadGatewayForEverything() {
+    return true;
+  }
+
+  @Override
+  protected HttpProxyServerBootstrap upstreamProxy() {
+    return super.upstreamProxy().withTransportProtocol(TransportProtocol.TCP).withSslEngineSource(serverSslEngineSource);
+  }
+
+  @Override
+  protected ChainedProxy newChainedProxy() {
+    return new BaseChainedProxy() {
+      @Override
+      public TransportProtocol getTransportProtocol() {
+        return TransportProtocol.TCP;
+      }
+
+      @Override
+      public boolean requiresEncryption() {
         return true;
-    }
-    
-    @Override
-    protected HttpProxyServerBootstrap upstreamProxy() {
-        return super.upstreamProxy()
-                .withTransportProtocol(TCP)
-                .withSslEngineSource(serverSslEngineSource);
-    }
+      }
 
-    @Override
-    protected ChainedProxy newChainedProxy() {
-        return new BaseChainedProxy() {
-            @Override
-            public TransportProtocol getTransportProtocol() {
-                return TransportProtocol.TCP;
-            }
-
-            @Override
-            public boolean requiresEncryption() {
-                return true;
-            }
-
-            @Override
-            public SSLEngine newSslEngine() {
-                return clientSslEngineSource.newSslEngine();
-            }
-        };
-    }
+      @Override
+      public SSLEngine newSslEngine() {
+        return clientSslEngineSource.newSslEngine();
+      }
+    };
+  }
 }

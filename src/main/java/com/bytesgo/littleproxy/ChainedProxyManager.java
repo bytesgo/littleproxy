@@ -1,8 +1,7 @@
 package com.bytesgo.littleproxy;
 
-import io.netty.handler.codec.http.HttpRequest;
-
 import java.util.Queue;
+import io.netty.handler.codec.http.HttpRequest;
 
 /**
  * <p>

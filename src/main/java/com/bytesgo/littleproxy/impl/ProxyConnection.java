@@ -1,12 +1,13 @@
 package com.bytesgo.littleproxy.impl;
 
-import static com.bytesgo.littleproxy.impl.ConnectionState.AWAITING_CHUNK;
-import static com.bytesgo.littleproxy.impl.ConnectionState.AWAITING_INITIAL;
-import static com.bytesgo.littleproxy.impl.ConnectionState.DISCONNECTED;
-import static com.bytesgo.littleproxy.impl.ConnectionState.HANDSHAKING;
-import static com.bytesgo.littleproxy.impl.ConnectionState.NEGOTIATING_CONNECT;
+import static com.bytesgo.littleproxy.enums.ConnectionState.AWAITING_CHUNK;
+import static com.bytesgo.littleproxy.enums.ConnectionState.AWAITING_INITIAL;
+import static com.bytesgo.littleproxy.enums.ConnectionState.DISCONNECTED;
+import static com.bytesgo.littleproxy.enums.ConnectionState.HANDSHAKING;
+import static com.bytesgo.littleproxy.enums.ConnectionState.NEGOTIATING_CONNECT;
 import javax.net.ssl.SSLEngine;
 import com.bytesgo.littleproxy.HttpFilter;
+import com.bytesgo.littleproxy.enums.ConnectionState;
 import com.bytesgo.littleproxy.logging.ProxyConnectionLogger;
 import com.bytesgo.littleproxy.util.ProxyUtils;
 import io.netty.buffer.ByteBuf;

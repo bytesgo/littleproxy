@@ -1,5 +1,12 @@
 package com.bytesgo.littleproxy;
 
+import static org.hamcrest.Matchers.emptyArray;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -12,16 +19,7 @@ import org.junit.Test;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.matchers.Times;
 import org.mockserver.model.ConnectionOptions;
-import com.bytesgo.littleproxy.HttpFilterSourceAdapter;
-import com.bytesgo.littleproxy.HttpProxyServer;
 import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
-import static org.hamcrest.Matchers.emptyArray;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
 
 public class MessageTerminationTest {
     private ClientAndServer mockServer;

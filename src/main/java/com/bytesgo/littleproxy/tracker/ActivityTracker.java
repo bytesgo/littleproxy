@@ -1,9 +1,11 @@
-package com.bytesgo.littleproxy;
+package com.bytesgo.littleproxy.tracker;
 
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 
 import javax.net.ssl.SSLSession;
+import com.bytesgo.littleproxy.FlowContext;
+import com.bytesgo.littleproxy.FullFlowContext;
 import java.net.InetSocketAddress;
 
 /**

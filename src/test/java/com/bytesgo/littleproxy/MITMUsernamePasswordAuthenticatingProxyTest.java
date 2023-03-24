@@ -1,6 +1,5 @@
 package com.bytesgo.littleproxy;
 
-import com.bytesgo.littleproxy.ProxyAuthenticator;
 import com.bytesgo.littleproxy.extras.SelfSignedMitmManager;
 
 /**

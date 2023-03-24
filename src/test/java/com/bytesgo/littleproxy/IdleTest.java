@@ -1,19 +1,17 @@
 package com.bytesgo.littleproxy;
 
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.URL;
-
-import org.eclipse.jetty.server.Server;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import com.bytesgo.littleproxy.HttpProxyServer;
-import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.URL;
+import org.eclipse.jetty.server.Server;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
 
 /**
  * Note - this test only works on UNIX systems because it checks file descriptor

@@ -1,17 +1,16 @@
 package com.bytesgo.littleproxy;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
 import org.apache.http.HttpResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.matchers.Times;
-import com.bytesgo.littleproxy.HttpProxyServer;
 import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
 import com.bytesgo.littleproxy.test.HttpClientUtil;
-import static org.junit.Assert.assertEquals;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
 
 public class ClonedProxyTest {
     private ClientAndServer mockServer;

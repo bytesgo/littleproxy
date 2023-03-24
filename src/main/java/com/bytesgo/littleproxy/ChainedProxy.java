@@ -1,8 +1,8 @@
 package com.bytesgo.littleproxy;
 
-import io.netty.handler.codec.http.HttpObject;
-
 import java.net.InetSocketAddress;
+import com.bytesgo.littleproxy.enums.TransportProtocol;
+import io.netty.handler.codec.http.HttpObject;
 
 /**
  * <p>

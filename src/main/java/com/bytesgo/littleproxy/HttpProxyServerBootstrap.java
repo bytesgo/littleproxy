@@ -1,7 +1,9 @@
 package com.bytesgo.littleproxy;
 
 import java.net.InetSocketAddress;
-import com.bytesgo.littleproxy.impl.ThreadPoolConfiguration;
+import com.bytesgo.littleproxy.config.ThreadPoolConfiguration;
+import com.bytesgo.littleproxy.enums.TransportProtocol;
+import com.bytesgo.littleproxy.tracker.ActivityTracker;
 
 /**
  * Configures and starts an {@link HttpProxyServer}. The HttpProxyServer is built using {@link #start()}. Sensible

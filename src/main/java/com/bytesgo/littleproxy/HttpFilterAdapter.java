@@ -1,11 +1,10 @@
 package com.bytesgo.littleproxy;
 
+import java.net.InetSocketAddress;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
-
-import java.net.InetSocketAddress;
 
 /**
  * Convenience base class for implementations of {@link HttpFilter}.

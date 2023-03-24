@@ -1,5 +1,16 @@
 package com.bytesgo.littleproxy;
 
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.net.ssl.SSLException;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.test.HttpClientUtil;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpObject;
@@ -7,23 +18,6 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import com.bytesgo.littleproxy.HttpFilter;
-import com.bytesgo.littleproxy.HttpFilterAdapter;
-import com.bytesgo.littleproxy.HttpFilterSource;
-import com.bytesgo.littleproxy.HttpFilterSourceAdapter;
-import com.bytesgo.littleproxy.HttpProxyServer;
-import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
-import com.bytesgo.littleproxy.test.HttpClientUtil;
-import javax.net.ssl.SSLException;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * This class tests direct requests to the proxy server, which causes endless

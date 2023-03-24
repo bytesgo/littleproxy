@@ -1,4 +1,6 @@
-package com.bytesgo.littleproxy.impl;
+package com.bytesgo.littleproxy.config;
+
+import com.bytesgo.littleproxy.impl.ServerGroup;
 
 /**
  * Configuration object for the proxy's thread pools. Controls the number of acceptor and worker threads in the Netty

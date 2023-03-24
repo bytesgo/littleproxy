@@ -1,21 +1,17 @@
 package com.bytesgo.littleproxy;
 
+import static org.hamcrest.Matchers.hasItem;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import java.nio.charset.Charset;
+import java.util.HashSet;
+import java.util.Set;
+import com.bytesgo.littleproxy.extras.SelfSignedMitmManager;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
-import java.nio.charset.Charset;
-import java.util.HashSet;
-import java.util.Queue;
-import java.util.Set;
-import com.bytesgo.littleproxy.HttpFilter;
-import com.bytesgo.littleproxy.HttpFilterAdapter;
-import com.bytesgo.littleproxy.HttpFilterSourceAdapter;
-import com.bytesgo.littleproxy.extras.SelfSignedMitmManager;
-import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 /**
  * Tests just a single basic proxy running as a man in the middle.

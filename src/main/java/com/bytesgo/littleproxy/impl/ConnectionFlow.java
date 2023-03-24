@@ -2,6 +2,7 @@ package com.bytesgo.littleproxy.impl;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import com.bytesgo.littleproxy.enums.ConnectionState;
 import com.bytesgo.littleproxy.logging.ProxyConnectionLogger;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -10,7 +11,7 @@ import io.netty.util.concurrent.GenericFutureListener;
  * Coordinates the various steps involved in establishing a connection, such as establishing a socket connection, SSL
  * handshaking, HTTP CONNECT request processing, and so on.
  */
-class ConnectionFlow {
+public class ConnectionFlow {
   private Queue<ConnectionFlowStep> steps = new ConcurrentLinkedQueue<ConnectionFlowStep>();
 
   private final ClientToProxyConnection clientConnection;
@@ -28,7 +29,7 @@ class ConnectionFlow {
    *        used for synchronizing the reader and writer threads that are both involved during the establishing of a
    *        connection.
    */
-  ConnectionFlow(ClientToProxyConnection clientConnection, ProxyToServerConnection serverConnection, Object connectLock) {
+  public ConnectionFlow(ClientToProxyConnection clientConnection, ProxyToServerConnection serverConnection, Object connectLock) {
     super();
     this.clientConnection = clientConnection;
     this.serverConnection = serverConnection;

@@ -1,4 +1,6 @@
-package com.bytesgo.littleproxy;
+package com.bytesgo.littleproxy.exception;
+
+import com.bytesgo.littleproxy.enums.TransportProtocol;
 
 /**
  * This exception indicates that the system was asked to use a TransportProtocol that it didn't know how to handle.

@@ -1,11 +1,8 @@
 package com.bytesgo.littleproxy;
 
-import static com.bytesgo.littleproxy.TransportProtocol.*;
+import static com.bytesgo.littleproxy.enums.TransportProtocol.*;
 import javax.net.ssl.SSLEngine;
-import com.bytesgo.littleproxy.ChainedProxy;
-import com.bytesgo.littleproxy.HttpProxyServerBootstrap;
-import com.bytesgo.littleproxy.SslEngineSource;
-import com.bytesgo.littleproxy.TransportProtocol;
+import com.bytesgo.littleproxy.enums.TransportProtocol;
 import com.bytesgo.littleproxy.extras.SelfSignedSslEngineSource;
 
 /**
