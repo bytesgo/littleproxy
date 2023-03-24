@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
 import com.bytesgo.littleproxy.HttpProxyServer;
 import com.bytesgo.littleproxy.TransportProtocol;
 import com.bytesgo.littleproxy.UnknownTransportProtocolException;
+import com.bytesgo.littleproxy.utils.NettyUdtUtil;
 import com.bytesgo.littleproxy.utils.ProxyUtils;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.udt.nio.NioUdtProvider;
 
 /**
  * Manages thread pools for one or more proxy server instances. When servers are created, they must register with the
@@ -85,7 +85,7 @@ public class ServerGroup {
     // allow the proxy to operate without UDT support. this allows clients that do not use UDT to exclude the barchart
     // dependency completely.
     if (ProxyUtils.isUdtAvailable()) {
-      TRANSPORT_PROTOCOL_SELECTOR_PROVIDERS.put(TransportProtocol.UDT, NioUdtProvider.BYTE_PROVIDER);
+      TRANSPORT_PROTOCOL_SELECTOR_PROVIDERS.put(TransportProtocol.UDT, NettyUdtUtil.getUdtProvider());
     } else {
       log.debug("UDT provider not found on classpath. UDT transport will not be available.");
     }
@@ -102,16 +102,16 @@ public class ServerGroup {
    * pools for specific transport protocols are lazily initialized as needed.
    *
    * @param name ServerGroup name to include in thread names
-   * @param incomingAcceptorThreads number of acceptor threads per protocol
-   * @param incomingWorkerThreads number of client-to-proxy worker threads per protocol
-   * @param outgoingWorkerThreads number of proxy-to-server worker threads per protocol
+   * @param incomingAcceptorThreadSize number of acceptor threads per protocol
+   * @param incomingWorkerThreadSize number of client-to-proxy worker threads per protocol
+   * @param outgoingWorkerThreadSize number of proxy-to-server worker threads per protocol
    */
-  public ServerGroup(String name, int incomingAcceptorThreads, int incomingWorkerThreads, int outgoingWorkerThreads) {
+  public ServerGroup(String name, int incomingAcceptorThreadSize, int incomingWorkerThreadSize, int outgoingWorkerThreadSize) {
     this.name = name;
     this.serverGroupId = serverGroupCount.getAndIncrement();
-    this.incomingAcceptorThreadSize = incomingAcceptorThreads;
-    this.incomingWorkerThreadSize = incomingWorkerThreads;
-    this.outgoingWorkerThreadSize = outgoingWorkerThreads;
+    this.incomingAcceptorThreadSize = incomingAcceptorThreadSize;
+    this.incomingWorkerThreadSize = incomingWorkerThreadSize;
+    this.outgoingWorkerThreadSize = outgoingWorkerThreadSize;
   }
 
   /**

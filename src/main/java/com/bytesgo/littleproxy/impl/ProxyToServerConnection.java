@@ -23,6 +23,7 @@ import com.bytesgo.littleproxy.HttpFilter;
 import com.bytesgo.littleproxy.MitmManager;
 import com.bytesgo.littleproxy.TransportProtocol;
 import com.bytesgo.littleproxy.UnknownTransportProtocolException;
+import com.bytesgo.littleproxy.utils.NettyUdtUtil;
 import com.bytesgo.littleproxy.utils.ProxyUtils;
 import com.google.common.net.HostAndPort;
 import io.netty.bootstrap.Bootstrap;
@@ -36,7 +37,6 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.channel.udt.nio.NioUdtProvider;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpMessage;
@@ -570,7 +570,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
           break;
         case UDT:
           LOG.debug("Connecting to server with UDT");
-          cb.channelFactory(NioUdtProvider.BYTE_CONNECTOR).option(ChannelOption.SO_REUSEADDR, true);
+          cb.channelFactory(NettyUdtUtil.getChannel()).option(ChannelOption.SO_REUSEADDR, true);
           break;
         default:
           throw new UnknownTransportProtocolException(transportProtocol);

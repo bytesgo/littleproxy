@@ -28,6 +28,7 @@ import com.bytesgo.littleproxy.ProxyAuthenticator;
 import com.bytesgo.littleproxy.SslEngineSource;
 import com.bytesgo.littleproxy.TransportProtocol;
 import com.bytesgo.littleproxy.UnknownTransportProtocolException;
+import com.bytesgo.littleproxy.utils.NettyUdtUtil;
 import com.bytesgo.littleproxy.utils.ProxyUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -42,7 +43,6 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.ChannelGroupFuture;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.udt.nio.NioUdtProvider;
 import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
@@ -444,7 +444,6 @@ public class DefaultHttpProxyServer implements HttpProxyServer {
     return this;
   }
 
-  @SuppressWarnings("deprecation")
   private void doStart() {
     ServerBootstrap serverBootstrap = new ServerBootstrap().group(serverGroup.getClientToProxyAcceptorPoolForTransport(transportProtocol),
         serverGroup.getClientToProxyWorkerPoolForTransport(transportProtocol));
@@ -467,8 +466,8 @@ public class DefaultHttpProxyServer implements HttpProxyServer {
         break;
       case UDT:
         LOG.info("Proxy listening with UDT transport");
-        serverBootstrap.channelFactory(NioUdtProvider.BYTE_ACCEPTOR).option(ChannelOption.SO_BACKLOG, 10).option(ChannelOption.SO_REUSEADDR,
-            true);
+        serverBootstrap.channelFactory(NettyUdtUtil.getServerChannel()).option(ChannelOption.SO_BACKLOG, 10)
+            .option(ChannelOption.SO_REUSEADDR, true);
         break;
       default:
         throw new UnknownTransportProtocolException(transportProtocol);
