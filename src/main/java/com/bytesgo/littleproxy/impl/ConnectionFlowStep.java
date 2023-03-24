@@ -7,7 +7,7 @@ import io.netty.util.concurrent.Future;
 /**
  * Represents a phase in a {@link ConnectionFlow}.
  */
-abstract class ConnectionFlowStep {
+abstract class ConnectionFlowStep<T> {
   private final ProxyConnectionLogger LOG;
   private final ProxyConnection<?> connection;
   private final ConnectionState state;
@@ -65,7 +65,7 @@ abstract class ConnectionFlowStep {
    * 
    * @return Future
    */
-  protected abstract Future execute();
+  protected abstract Future<T> execute();
 
   /**
    * When the flow determines that this step was successful, it calls into this method. The default implementation simply

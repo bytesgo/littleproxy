@@ -302,13 +302,13 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
    * {@link ChannelPipeline#remove(String)} can deadlock if called directly.
    * </p>
    */
-  protected ConnectionFlowStep StartTunneling = new ConnectionFlowStep(this, NEGOTIATING_CONNECT) {
+  protected ConnectionFlowStep<Void> StartTunneling = new ConnectionFlowStep<Void>(this, NEGOTIATING_CONNECT) {
     @Override
     boolean shouldSuppressInitialRequest() {
       return true;
     }
 
-    protected Future<?> execute() {
+    protected Future<Void> execute() {
       try {
         ChannelPipeline pipeline = ctx.pipeline();
         if (pipeline.get("encoder") != null) {
@@ -376,16 +376,16 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
    * 
    * @param sslEngine the {@link SSLEngine} for doing the encryption
    */
-  protected ConnectionFlowStep EncryptChannel(final SSLEngine sslEngine) {
+  protected ConnectionFlowStep<Channel> EncryptChannel(final SSLEngine sslEngine) {
 
-    return new ConnectionFlowStep(this, HANDSHAKING) {
+    return new ConnectionFlowStep<Channel>(this, HANDSHAKING) {
       @Override
       boolean shouldExecuteOnEventLoop() {
         return false;
       }
 
       @Override
-      protected Future<?> execute() {
+      protected Future<Channel> execute() {
         return encrypt(sslEngine, !runsAsSslClient);
       }
     };

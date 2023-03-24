@@ -549,14 +549,14 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
   /**
    * Opens the socket connection.
    */
-  private ConnectionFlowStep ConnectChannel = new ConnectionFlowStep(this, CONNECTING) {
+  private ConnectionFlowStep<Void> ConnectChannel = new ConnectionFlowStep<Void>(this, CONNECTING) {
     @Override
     boolean shouldExecuteOnEventLoop() {
       return false;
     }
 
     @Override
-    protected Future<?> execute() {
+    protected Future<Void> execute() {
       Bootstrap cb = new Bootstrap().group(proxyServer.getProxyToServerWorkerFor(transportProtocol));
 
       switch (transportProtocol) {
@@ -595,8 +595,8 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
   /**
    * Writes the HTTP CONNECT to the server and waits for a 200 response.
    */
-  private ConnectionFlowStep HTTPCONNECTWithChainedProxy = new ConnectionFlowStep(this, AWAITING_CONNECT_OK) {
-    protected Future<?> execute() {
+  private ConnectionFlowStep<Void> HTTPCONNECTWithChainedProxy = new ConnectionFlowStep<Void>(this, AWAITING_CONNECT_OK) {
+    protected Future<Void> execute() {
       LOG.debug("Handling CONNECT request through Chained Proxy");
       chainedProxy.filterRequest(initialRequest);
       MitmManager mitmManager = proxyServer.getMitmManager();
@@ -657,7 +657,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
    * This does not wait for the handshake to finish so that we can go on and respond to the CONNECT request.
    * </p>
    */
-  private ConnectionFlowStep MitmEncryptClientChannel = new ConnectionFlowStep(this, HANDSHAKING) {
+  private ConnectionFlowStep<Channel> MitmEncryptClientChannel = new ConnectionFlowStep<Channel>(this, HANDSHAKING) {
     @Override
     boolean shouldExecuteOnEventLoop() {
       return false;
@@ -669,7 +669,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
     }
 
     @Override
-    protected Future<?> execute() {
+    protected Future<Channel> execute() {
       return clientConnection.encrypt(proxyServer.getMitmManager().clientSslEngineFor(initialRequest, sslEngine.getSession()), false)
           .addListener(new GenericFutureListener<Future<? super Channel>>() {
             @Override

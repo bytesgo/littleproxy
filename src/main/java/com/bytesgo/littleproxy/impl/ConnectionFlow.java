@@ -12,11 +12,11 @@ import io.netty.util.concurrent.GenericFutureListener;
  * handshaking, HTTP CONNECT request processing, and so on.
  */
 public class ConnectionFlow {
-  private Queue<ConnectionFlowStep> steps = new ConcurrentLinkedQueue<ConnectionFlowStep>();
+  private Queue<ConnectionFlowStep<?>> steps = new ConcurrentLinkedQueue<ConnectionFlowStep<?>>();
 
   private final ClientToProxyConnection clientConnection;
   private final ProxyToServerConnection serverConnection;
-  private volatile ConnectionFlowStep currentStep;
+  private volatile ConnectionFlowStep<?> currentStep;
   private volatile boolean suppressInitialRequest = false;
   private final Object connectLock;
 
@@ -42,7 +42,7 @@ public class ConnectionFlow {
    * @param step
    * @return ConnectionFlow
    */
-  ConnectionFlow then(ConnectionFlowStep step) {
+  ConnectionFlow then(ConnectionFlowStep<?> step) {
     steps.add(step);
     return this;
   }
@@ -121,10 +121,9 @@ public class ConnectionFlow {
    * 
    * @param LOG
    */
-  @SuppressWarnings("unchecked")
   private void doProcessCurrentStep(final ProxyConnectionLogger LOG) {
-    currentStep.execute().addListener(new GenericFutureListener<Future<Void>>() {
-      public void operationComplete(Future<Void> future) throws Exception {
+    currentStep.execute().addListener(new GenericFutureListener<Future<Object>>() {
+      public void operationComplete(Future<Object> future) throws Exception {
         synchronized (connectLock) {
           if (future.isSuccess()) {
             LOG.debug("ConnectionFlowStep succeeded");
