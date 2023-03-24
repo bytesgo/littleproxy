@@ -2,6 +2,7 @@ package com.bytesgo.littleproxy.impl;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import com.bytesgo.littleproxy.logging.ProxyConnectionLogger;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 

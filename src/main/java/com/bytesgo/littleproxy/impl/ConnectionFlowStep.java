@@ -1,5 +1,6 @@
 package com.bytesgo.littleproxy.impl;
 
+import com.bytesgo.littleproxy.logging.ProxyConnectionLogger;
 import io.netty.util.concurrent.Future;
 
 /**

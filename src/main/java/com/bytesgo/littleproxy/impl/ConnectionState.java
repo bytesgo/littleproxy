@@ -1,6 +1,6 @@
 package com.bytesgo.littleproxy.impl;
 
-enum ConnectionState {
+public enum ConnectionState {
   /**
    * Connection attempting to connect.
    */

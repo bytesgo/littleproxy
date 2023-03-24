@@ -7,7 +7,8 @@ import static com.bytesgo.littleproxy.impl.ConnectionState.HANDSHAKING;
 import static com.bytesgo.littleproxy.impl.ConnectionState.NEGOTIATING_CONNECT;
 import javax.net.ssl.SSLEngine;
 import com.bytesgo.littleproxy.HttpFilter;
-import com.bytesgo.littleproxy.utils.ProxyUtils;
+import com.bytesgo.littleproxy.logging.ProxyConnectionLogger;
+import com.bytesgo.littleproxy.util.ProxyUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -66,7 +67,7 @@ import io.netty.util.concurrent.Promise;
  * 
  * @param <I> the type of "initial" message. This will be either {@link HttpResponse} or {@link HttpRequest}.
  */
-abstract class ProxyConnection<I extends HttpObject> extends SimpleChannelInboundHandler<Object> {
+public abstract class ProxyConnection<I extends HttpObject> extends SimpleChannelInboundHandler<Object> {
   protected final ProxyConnectionLogger LOG = new ProxyConnectionLogger(this);
 
   protected final DefaultHttpProxyServer proxyServer;
@@ -109,7 +110,6 @@ abstract class ProxyConnection<I extends HttpObject> extends SimpleChannelInboun
    */
   protected void read(Object msg) {
     LOG.debug("Reading: {}", msg);
-
     lastReadTime = System.currentTimeMillis();
 
     if (tunneling) {
@@ -494,7 +494,7 @@ abstract class ProxyConnection<I extends HttpObject> extends SimpleChannelInboun
     this.currentState = state;
   }
 
-  protected ConnectionState getCurrentState() {
+  public ConnectionState getCurrentState() {
     return currentState;
   }
 
@@ -621,6 +621,13 @@ abstract class ProxyConnection<I extends HttpObject> extends SimpleChannelInboun
     } finally {
       super.userEventTriggered(ctx, evt);
     }
+  }
+
+  /**
+   * @return the channel
+   */
+  public Channel getChannel() {
+    return channel;
   }
 
   /***************************************************************************

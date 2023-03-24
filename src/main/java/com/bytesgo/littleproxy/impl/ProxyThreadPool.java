@@ -2,6 +2,7 @@ package com.bytesgo.littleproxy.impl;
 
 import java.nio.channels.spi.SelectorProvider;
 import java.util.List;
+import com.bytesgo.littleproxy.util.concurrent.CategorizedThreadFactory;
 import com.google.common.collect.ImmutableList;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;

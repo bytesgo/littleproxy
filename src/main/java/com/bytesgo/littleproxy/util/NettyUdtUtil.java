@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.bytesgo.littleproxy.utils;
+package com.bytesgo.littleproxy.util;
 
 import java.nio.channels.spi.SelectorProvider;
 import io.netty.channel.ChannelFactory;

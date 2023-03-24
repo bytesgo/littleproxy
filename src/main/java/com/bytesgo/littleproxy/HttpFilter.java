@@ -1,7 +1,7 @@
 package com.bytesgo.littleproxy;
 
 import java.net.InetSocketAddress;
-import com.bytesgo.littleproxy.utils.ProxyUtils;
+import com.bytesgo.littleproxy.util.ProxyUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpObject;

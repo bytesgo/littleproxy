@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 import com.bytesgo.littleproxy.HttpProxyServer;
 import com.bytesgo.littleproxy.TransportProtocol;
 import com.bytesgo.littleproxy.UnknownTransportProtocolException;
-import com.bytesgo.littleproxy.utils.NettyUdtUtil;
-import com.bytesgo.littleproxy.utils.ProxyUtils;
+import com.bytesgo.littleproxy.util.NettyUdtUtil;
+import com.bytesgo.littleproxy.util.ProxyUtils;
 import io.netty.channel.EventLoopGroup;
 
 /**

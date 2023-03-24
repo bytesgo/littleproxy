@@ -1,4 +1,4 @@
-package com.bytesgo.littleproxy.utils;
+package com.bytesgo.littleproxy.util;
 
 import java.io.IOException;
 import java.net.InetAddress;

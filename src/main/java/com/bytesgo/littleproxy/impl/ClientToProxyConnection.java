@@ -28,7 +28,7 @@ import com.bytesgo.littleproxy.HttpFilter;
 import com.bytesgo.littleproxy.HttpFilterAdapter;
 import com.bytesgo.littleproxy.ProxyAuthenticator;
 import com.bytesgo.littleproxy.SslEngineSource;
-import com.bytesgo.littleproxy.utils.ProxyUtils;
+import com.bytesgo.littleproxy.util.ProxyUtils;
 import com.google.common.io.BaseEncoding;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

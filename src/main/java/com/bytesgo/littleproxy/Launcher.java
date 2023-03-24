@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.bytesgo.littleproxy.extras.SelfSignedMitmManager;
 import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
-import com.bytesgo.littleproxy.utils.ProxyUtils;
+import com.bytesgo.littleproxy.util.ProxyUtils;
 
 /**
  * Launches a new HTTP proxy.
