@@ -1,14 +1,14 @@
 package com.bytesgo.littleproxy;
 
-import static org.hamcrest.Matchers.isIn;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicLong;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import com.bytesgo.littleproxy.enums.TransportProtocol;
 import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
 import com.bytesgo.littleproxy.tracker.ActivityTracker;
@@ -106,7 +106,8 @@ public abstract class BaseChainedProxyTest extends BaseProxyTest {
     assertEquals("Upstream proxy should have seen every request sent by downstream proxy", REQUESTS_SENT_BY_DOWNSTREAM.get(),
         REQUESTS_RECEIVED_BY_UPSTREAM.get());
     assertEquals("1 and only 1 transport protocol should have been used to upstream proxy", 1, TRANSPORTS_USED.size());
-    assertThat("Correct transport should have been used", newChainedProxy().getTransportProtocol(), isIn(TRANSPORTS_USED));
+    MatcherAssert.assertThat("Correct transport should have been used", newChainedProxy().getTransportProtocol(),
+        Matchers.is(Matchers.in(TRANSPORTS_USED)));
   }
 
   protected class BaseChainedProxy extends ChainedProxyAdapter {

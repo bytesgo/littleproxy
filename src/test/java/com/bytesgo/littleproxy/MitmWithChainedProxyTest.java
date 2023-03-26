@@ -2,10 +2,10 @@ package com.bytesgo.littleproxy;
 
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Set;
+import org.hamcrest.MatcherAssert;
 import com.bytesgo.littleproxy.extras.SelfSignedMitmManager;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpMethod;
@@ -14,167 +14,136 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 
 /**
- * Tests a proxy that runs as a MITM and which is chained with
- * another proxy. 
+ * Tests a proxy that runs as a MITM and which is chained with another proxy.
  */
 public class MitmWithChainedProxyTest extends BaseChainedProxyTest {
-    private Set<HttpMethod> requestPreMethodsSeen = new HashSet<HttpMethod>();
-    private Set<HttpMethod> requestPostMethodsSeen = new HashSet<HttpMethod>();
-    private StringBuilder responsePreBody = new StringBuilder();
-    private StringBuilder responsePostBody = new StringBuilder();
-    private Set<HttpMethod> responsePreOriginalRequestMethodsSeen = new HashSet<HttpMethod>();
-    private Set<HttpMethod> responsePostOriginalRequestMethodsSeen = new HashSet<HttpMethod>();
-    
-    @Override
-    protected void setUp() {
-   	
-        REQUESTS_SENT_BY_DOWNSTREAM.set(0);
-        REQUESTS_RECEIVED_BY_UPSTREAM.set(0);
-        TRANSPORTS_USED.clear();
-        this.upstreamProxy = upstreamProxy().start();
-    	
-        this.proxyServer = bootstrapProxy()
-                .withPort(0)
-                .withChainProxyManager(chainedProxyManager())
-                .plusActivityTracker(DOWNSTREAM_TRACKER)
-                .withManInTheMiddle(new SelfSignedMitmManager())
-                .withFiltersSource(new HttpFilterSourceAdapter() {
-                    @Override
-                    public HttpFilter filterRequest(HttpRequest originalRequest) {
-                        return new HttpFilterAdapter(originalRequest) {
-                            @Override
-                            public HttpResponse clientToProxyRequest(
-                                    HttpObject httpObject) {
-                                if (httpObject instanceof HttpRequest) {
-                                    requestPreMethodsSeen
-                                            .add(((HttpRequest) httpObject)
-                                                    .getMethod());
-                                }
-                                return null;
-                            }
+  private Set<HttpMethod> requestPreMethodsSeen = new HashSet<HttpMethod>();
+  private Set<HttpMethod> requestPostMethodsSeen = new HashSet<HttpMethod>();
+  private StringBuilder responsePreBody = new StringBuilder();
+  private StringBuilder responsePostBody = new StringBuilder();
+  private Set<HttpMethod> responsePreOriginalRequestMethodsSeen = new HashSet<HttpMethod>();
+  private Set<HttpMethod> responsePostOriginalRequestMethodsSeen = new HashSet<HttpMethod>();
 
-                            @Override
-                            public HttpResponse proxyToServerRequest(
-                                    HttpObject httpObject) {
-                                if (httpObject instanceof HttpRequest) {
-                                    requestPostMethodsSeen
-                                            .add(((HttpRequest) httpObject)
-                                                    .getMethod());
-                                }
-                                return null;
-                            }
+  @Override
+  protected void setUp() {
 
-                            @Override
-                            public HttpObject serverToProxyResponse(
-                                    HttpObject httpObject) {
-                                if (httpObject instanceof HttpResponse) {
-                                    responsePreOriginalRequestMethodsSeen
-                                            .add(originalRequest.getMethod());
-                                } else if (httpObject instanceof HttpContent) {
-                                    responsePreBody.append(((HttpContent) httpObject)
-                                            .content().toString(
-                                                    Charset.forName("UTF-8")));
-                                }
-                                return httpObject;
-                            }
+    REQUESTS_SENT_BY_DOWNSTREAM.set(0);
+    REQUESTS_RECEIVED_BY_UPSTREAM.set(0);
+    TRANSPORTS_USED.clear();
+    this.upstreamProxy = upstreamProxy().start();
 
-                            @Override
-                            public HttpObject proxyToClientResponse(
-                                    HttpObject httpObject) {
-                                if (httpObject instanceof HttpResponse) {
-                                    responsePostOriginalRequestMethodsSeen
-                                            .add(originalRequest.getMethod());
-                                } else if (httpObject instanceof HttpContent) {
-                                    responsePostBody.append(((HttpContent) httpObject)
-                                            .content().toString(
-                                                    Charset.forName("UTF-8")));
-                                }
-                                return httpObject;
-                            }
-                        };
-                    }
-                })
-                .start();
-    }
-    
-    @Override
-    protected boolean isMITM() {
-        return true;
-    }
+    this.proxyServer = bootstrapProxy().withPort(0).withChainProxyManager(chainedProxyManager()).plusActivityTracker(DOWNSTREAM_TRACKER)
+        .withManInTheMiddle(new SelfSignedMitmManager()).withFiltersSource(new HttpFilterSourceAdapter() {
+          @Override
+          public HttpFilter filterRequest(HttpRequest originalRequest) {
+            return new HttpFilterAdapter(originalRequest) {
+              @Override
+              public HttpResponse clientToProxyRequest(HttpObject httpObject) {
+                if (httpObject instanceof HttpRequest) {
+                  requestPreMethodsSeen.add(((HttpRequest) httpObject).method());
+                }
+                return null;
+              }
 
-    @Override
-    public void testSimpleGetRequest() throws Exception {
-        super.testSimpleGetRequest();
-        if (isChained() && !expectBadGatewayForEverything()) {
-            assertMethodSeenInRequestFilters(HttpMethod.GET);
-            assertMethodSeenInResponseFilters(HttpMethod.GET);
-            assertResponseFromFiltersMatchesActualResponse();
-        }
-    }
+              @Override
+              public HttpResponse proxyToServerRequest(HttpObject httpObject) {
+                if (httpObject instanceof HttpRequest) {
+                  requestPostMethodsSeen.add(((HttpRequest) httpObject).method());
+                }
+                return null;
+              }
 
-    @Override
-    public void testSimpleGetRequestOverHTTPS() throws Exception {
-        super.testSimpleGetRequestOverHTTPS();
-        if (isChained() && !expectBadGatewayForEverything()) {
-            assertMethodSeenInRequestFilters(HttpMethod.CONNECT);
-            assertMethodSeenInRequestFilters(HttpMethod.GET);
-            assertMethodSeenInResponseFilters(HttpMethod.GET);
-            assertResponseFromFiltersMatchesActualResponse();
-        }
-    }
+              @Override
+              public HttpObject serverToProxyResponse(HttpObject httpObject) {
+                if (httpObject instanceof HttpResponse) {
+                  responsePreOriginalRequestMethodsSeen.add(originalRequest.method());
+                } else if (httpObject instanceof HttpContent) {
+                  responsePreBody.append(((HttpContent) httpObject).content().toString(Charset.forName("UTF-8")));
+                }
+                return httpObject;
+              }
 
-    @Override
-    public void testSimplePostRequest() throws Exception {
-        super.testSimplePostRequest();
-        if (isChained() && !expectBadGatewayForEverything()) {
-            assertMethodSeenInRequestFilters(HttpMethod.POST);
-            assertMethodSeenInResponseFilters(HttpMethod.POST);
-            assertResponseFromFiltersMatchesActualResponse();
-        }
-    }
-    
-    @Override
-    public void testSimplePostRequestOverHTTPS() throws Exception {
-        super.testSimplePostRequestOverHTTPS();
-        if (isChained() && !expectBadGatewayForEverything()) {
-            assertMethodSeenInRequestFilters(HttpMethod.CONNECT);
-            assertMethodSeenInRequestFilters(HttpMethod.POST);
-            assertMethodSeenInResponseFilters(HttpMethod.POST);
-            assertResponseFromFiltersMatchesActualResponse();
-        }
-    }
-    
-    private void assertMethodSeenInRequestFilters(HttpMethod method) {
-        assertThat(method
-                        + " should have been seen in clientToProxyRequest filter",
-                requestPreMethodsSeen, hasItem(method));
-        assertThat(method
-                        + " should have been seen in proxyToServerRequest filter",
-                requestPostMethodsSeen, hasItem(method));
-    }
+              @Override
+              public HttpObject proxyToClientResponse(HttpObject httpObject) {
+                if (httpObject instanceof HttpResponse) {
+                  responsePostOriginalRequestMethodsSeen.add(originalRequest.method());
+                } else if (httpObject instanceof HttpContent) {
+                  responsePostBody.append(((HttpContent) httpObject).content().toString(Charset.forName("UTF-8")));
+                }
+                return httpObject;
+              }
+            };
+          }
+        }).start();
+  }
 
-    private void assertMethodSeenInResponseFilters(HttpMethod method) {
-        assertThat(
-                method
-                        + " should have been seen as the original requests's method in serverToProxyResponse filter",
-                responsePreOriginalRequestMethodsSeen, hasItem(method));
-        assertThat(
-                method
-                        + " should have been seen as the original requests's method in proxyToClientResponse filter",
-                responsePostOriginalRequestMethodsSeen, hasItem(method));
-    }
+  @Override
+  protected boolean isMITM() {
+    return true;
+  }
 
-    private void assertResponseFromFiltersMatchesActualResponse() {
-        assertEquals(
-                "Data received through HttpFilters.serverToProxyResponse should match response",
-                lastResponse, responsePreBody.toString());
-        assertEquals(
-                "Data received through HttpFilters.proxyToClientResponse should match response",
-                lastResponse, responsePostBody.toString());
+  @Override
+  public void testSimpleGetRequest() throws Exception {
+    super.testSimpleGetRequest();
+    if (isChained() && !expectBadGatewayForEverything()) {
+      assertMethodSeenInRequestFilters(HttpMethod.GET);
+      assertMethodSeenInResponseFilters(HttpMethod.GET);
+      assertResponseFromFiltersMatchesActualResponse();
     }
-    
-    @Override
-    protected void tearDown() throws Exception {
-        this.upstreamProxy.abort();
+  }
+
+  @Override
+  public void testSimpleGetRequestOverHTTPS() throws Exception {
+    super.testSimpleGetRequestOverHTTPS();
+    if (isChained() && !expectBadGatewayForEverything()) {
+      assertMethodSeenInRequestFilters(HttpMethod.CONNECT);
+      assertMethodSeenInRequestFilters(HttpMethod.GET);
+      assertMethodSeenInResponseFilters(HttpMethod.GET);
+      assertResponseFromFiltersMatchesActualResponse();
     }
+  }
+
+  @Override
+  public void testSimplePostRequest() throws Exception {
+    super.testSimplePostRequest();
+    if (isChained() && !expectBadGatewayForEverything()) {
+      assertMethodSeenInRequestFilters(HttpMethod.POST);
+      assertMethodSeenInResponseFilters(HttpMethod.POST);
+      assertResponseFromFiltersMatchesActualResponse();
+    }
+  }
+
+  @Override
+  public void testSimplePostRequestOverHTTPS() throws Exception {
+    super.testSimplePostRequestOverHTTPS();
+    if (isChained() && !expectBadGatewayForEverything()) {
+      assertMethodSeenInRequestFilters(HttpMethod.CONNECT);
+      assertMethodSeenInRequestFilters(HttpMethod.POST);
+      assertMethodSeenInResponseFilters(HttpMethod.POST);
+      assertResponseFromFiltersMatchesActualResponse();
+    }
+  }
+
+  private void assertMethodSeenInRequestFilters(HttpMethod method) {
+    MatcherAssert.assertThat(method + " should have been seen in clientToProxyRequest filter", requestPreMethodsSeen, hasItem(method));
+    MatcherAssert.assertThat(method + " should have been seen in proxyToServerRequest filter", requestPostMethodsSeen, hasItem(method));
+  }
+
+  private void assertMethodSeenInResponseFilters(HttpMethod method) {
+    MatcherAssert.assertThat(method + " should have been seen as the original requests's method in serverToProxyResponse filter",
+        responsePreOriginalRequestMethodsSeen, hasItem(method));
+    MatcherAssert.assertThat(method + " should have been seen as the original requests's method in proxyToClientResponse filter",
+        responsePostOriginalRequestMethodsSeen, hasItem(method));
+  }
+
+  private void assertResponseFromFiltersMatchesActualResponse() {
+    assertEquals("Data received through HttpFilters.serverToProxyResponse should match response", lastResponse, responsePreBody.toString());
+    assertEquals("Data received through HttpFilters.proxyToClientResponse should match response", lastResponse,
+        responsePostBody.toString());
+  }
+
+  @Override
+  protected void tearDown() throws Exception {
+    this.upstreamProxy.abort();
+  }
 }

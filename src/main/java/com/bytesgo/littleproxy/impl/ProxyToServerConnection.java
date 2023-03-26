@@ -865,7 +865,9 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
     // HttpObjectAggregator is in
     // the pipeline to generate FullHttpRequests), we need to manually release it to avoid a memory leak.
     if (initialRequest instanceof ReferenceCounted) {
-      ((ReferenceCounted) initialRequest).release();
+      if (((ReferenceCounted) initialRequest).refCnt() > 0) {
+        ((ReferenceCounted) initialRequest).release();
+      }
     }
   }
 

@@ -13,11 +13,11 @@ import java.util.Arrays;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -53,11 +53,11 @@ public class VariableSpeedClientServerTest {
         DefaultHttpProxyServer.bootstrap().withPort(proxyPort).start();
         Thread.yield();
         Thread.sleep(400);
-        final DefaultHttpClient client = new DefaultHttpClient();
+        CloseableHttpClient client = HttpClients.createDefault();
+        RequestConfig.Builder requestConfig = RequestConfig.custom();
         final HttpHost proxy = new HttpHost("127.0.0.1", proxyPort, "http");
-        client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
-        client.getParams().setParameter(
-                CoreConnectionPNames.CONNECTION_TIMEOUT, 50000);
+        requestConfig.setProxy(proxy);
+        requestConfig.setConnectTimeout(5000);
         // client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT,
         // 120000);
 

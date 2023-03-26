@@ -1,13 +1,13 @@
 package com.bytesgo.littleproxy;
 
 import static org.hamcrest.Matchers.lessThan;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
 import org.eclipse.jetty.server.Server;
+import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,7 +84,7 @@ public class IdleTest {
                 - initialFileDescriptors;
 
         double fdDeltaRatio = fdDeltaToClosed / fdDeltaToOpen;
-        assertThat(
+        MatcherAssert.assertThat(
                 "Number of file descriptors after close should be much closer to initial value than number of file descriptors while open (+ 1%).\n"
                         + "Initial file descriptors: " + initialFileDescriptors + "; file descriptors while connections open: " + fileDescriptorsWhileConnectionsOpen + "; "
                         + "file descriptors after connections closed: " + fileDescriptorsAfterConnectionsClosed + "\n"

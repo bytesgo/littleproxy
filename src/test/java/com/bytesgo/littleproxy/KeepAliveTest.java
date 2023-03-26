@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -13,6 +12,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,330 +22,278 @@ import org.mockserver.model.ConnectionOptions;
 import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
 import com.bytesgo.littleproxy.test.SocketClientUtil;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 
 /**
  * This class tests the proxy's keep alive/connection closure behavior.
  */
 public class KeepAliveTest {
-    private HttpProxyServer proxyServer;
+  private HttpProxyServer proxyServer;
 
-    private ClientAndServer mockServer;
-    private int mockServerPort;
+  private ClientAndServer mockServer;
+  private int mockServerPort;
 
-    private Socket socket;
+  private Socket socket;
 
-    @Before
-    public void setUp() throws Exception {
-        mockServer = new ClientAndServer(0);
-        mockServerPort = mockServer.getPort();
-        socket = null;
-        proxyServer = null;
+  @Before
+  public void setUp() throws Exception {
+    mockServer = new ClientAndServer(0);
+    mockServerPort = mockServer.getPort();
+    socket = null;
+    proxyServer = null;
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    try {
+      if (proxyServer != null) {
+        proxyServer.abort();
+      }
+    } finally {
+      try {
+        if (mockServer != null) {
+          mockServer.stop();
+        }
+      } finally {
+        if (socket != null) {
+          socket.close();
+        }
+      }
+    }
+  }
+
+  /**
+   * Tests that the proxy does not close the connection after a successful HTTP 1.1 GET request and response.
+   */
+  @Test
+  public void testHttp11DoesNotCloseConnectionByDefault() throws IOException, InterruptedException {
+    mockServer.when(request().withMethod("GET").withPath("/success"), Times.exactly(2))
+        .respond(response().withStatusCode(200).withBody("success"));
+
+    this.proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).start();
+    this.socket = SocketClientUtil.getSocketToProxyServer(proxyServer);
+
+    // construct the basic request: METHOD + URI + HTTP version + CRLF (to indicate the end of the request)
+    String successfulGet = "GET http://localhost:" + mockServerPort + "/success HTTP/1.1\r\n" + "\r\n";
+
+    // send the same request twice over the same connection
+    for (int i = 1; i <= 2; i++) {
+      SocketClientUtil.writeStringToSocket(successfulGet, socket);
+
+      // wait a bit to allow the proxy server to respond
+      Thread.sleep(750);
+
+      String response = SocketClientUtil.readStringFromSocket(socket);
+
+      MatcherAssert.assertThat("Expected to receive an HTTP 200 from the server (iteration: " + i + ")", response,
+          startsWith("HTTP/1.1 200 OK"));
+      MatcherAssert.assertThat("Unexpected message body (iteration: " + i + ")", response, endsWith("success"));
     }
 
-    @After
-    public void tearDown() throws Exception {
-        try {
-            if (proxyServer != null) {
-                proxyServer.abort();
+    assertTrue("Expected connection to proxy server to be open and readable", SocketClientUtil.isSocketReadyToRead(socket));
+    assertTrue("Expected connection to proxy server to be open and writable", SocketClientUtil.isSocketReadyToWrite(socket));
+  }
+
+  /**
+   * Tests that the proxy keeps the connection to the client open after a server disconnect, even when the server is using
+   * connection closure to indicate the end of a message.
+   */
+  @Test
+  public void testProxyKeepsClientConnectionOpenAfterServerDisconnect() throws IOException, InterruptedException {
+    mockServer.when(request().withMethod("GET").withPath("/success"), Times.exactly(2))
+        .respond(response().withStatusCode(200).withBody("success").withConnectionOptions(
+            new ConnectionOptions().withKeepAliveOverride(false).withSuppressContentLengthHeader(true).withCloseSocket(true)));
+
+    this.proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).start();
+    this.socket = SocketClientUtil.getSocketToProxyServer(proxyServer);
+
+    // construct the basic request: METHOD + URI + HTTP version + CRLF (to indicate the end of the request)
+    String successfulGet = "GET http://localhost:" + mockServerPort + "/success HTTP/1.1\r\n" + "\r\n";
+
+    // send the same request twice over the same connection
+    for (int i = 1; i <= 2; i++) {
+      SocketClientUtil.writeStringToSocket(successfulGet, socket);
+
+      // wait a bit to allow the proxy server to respond
+      Thread.sleep(750);
+
+      String response = SocketClientUtil.readStringFromSocket(socket);
+
+      MatcherAssert.assertThat("Expected to receive an HTTP 200 from the server (iteration: " + i + ")", response,
+          startsWith("HTTP/1.1 200 OK"));
+      // the proxy will set the Transfer-Encoding to chunked since the server is using connection closure to indicate the end
+      // of the message.
+      // (matching capitalized or lowercase Transfer-Encoding, since Netty 4.1+ uses lowercase header names)
+      MatcherAssert.assertThat("Expected proxy to set Transfer-Encoding to chunked", response.toLowerCase(Locale.US),
+          containsString("transfer-encoding: chunked"));
+      // the Transfer-Encoding is chunked, so the body text will be followed by a 0 and 2 CRLFs
+      MatcherAssert.assertThat("Unexpected message body (iteration: " + i + ")", response, containsString("success"));
+    }
+
+    assertTrue("Expected connection to proxy server to be open and readable", SocketClientUtil.isSocketReadyToRead(socket));
+    assertTrue("Expected connection to proxy server to be open and writable", SocketClientUtil.isSocketReadyToWrite(socket));
+  }
+
+  /**
+   * Tests that the proxy does not close the connection after a 502 Bad Gateway response.
+   */
+  @Test
+  public void testBadGatewayDoesNotCloseConnection() throws IOException, InterruptedException {
+    mockServer.when(request().withMethod("GET").withPath("/success"), Times.exactly(1))
+        .respond(response().withStatusCode(200).withBody("success"));
+
+    this.proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).start();
+
+    socket = SocketClientUtil.getSocketToProxyServer(proxyServer);
+
+    String badGatewayGet = "GET http://localhost:0/success HTTP/1.1\r\n" + "\r\n";
+
+    // send the same request twice over the same connection
+    for (int i = 1; i <= 2; i++) {
+      SocketClientUtil.writeStringToSocket(badGatewayGet, socket);
+
+      // wait a bit to allow the proxy server to respond
+      Thread.sleep(1500);
+
+      String response = SocketClientUtil.readStringFromSocket(socket);
+
+      MatcherAssert.assertThat("Expected to receive an HTTP 200 from the server (iteration: " + i + ")", response,
+          startsWith("HTTP/1.1 502 Bad Gateway"));
+    }
+
+    assertTrue("Expected connection to proxy server to be open and readable", SocketClientUtil.isSocketReadyToRead(socket));
+    assertTrue("Expected connection to proxy server to be open and writable", SocketClientUtil.isSocketReadyToWrite(socket));
+  }
+
+  /**
+   * Tests that the proxy does not close the connection after a 504 Gateway Timeout response.
+   */
+  @Test
+  public void testGatewayTimeoutDoesNotCloseConnection() throws IOException, InterruptedException {
+    mockServer.when(request().withMethod("GET").withPath("/success"), Times.exactly(2))
+        .respond(response().withStatusCode(200).withDelay(TimeUnit.SECONDS, 10).withBody("success"));
+
+    this.proxyServer = DefaultHttpProxyServer.bootstrap().withIdleConnectionTimeout(2).withPort(0).start();
+
+    socket = SocketClientUtil.getSocketToProxyServer(proxyServer);
+
+    String successfulGet = "GET http://localhost:" + mockServerPort + "/success HTTP/1.1\r\n" + "\r\n";
+
+    // send the same request twice over the same connection
+    for (int i = 1; i <= 2; i++) {
+      SocketClientUtil.writeStringToSocket(successfulGet, socket);
+
+      String response = SocketClientUtil.readStringFromSocket(socket);
+
+      // match the whole response to make sure that the it is not repeated
+      MatcherAssert.assertThat("The response is repeated:", response, is("HTTP/1.1 504 Gateway Timeout\r\n" + "Content-Length: 15\r\n"
+          + "Content-Type: text/html; charset=utf-8\r\n" + "\r\n" + "Gateway Timeout"));
+    }
+
+    assertTrue("Expected connection to proxy server to be open and readable", SocketClientUtil.isSocketReadyToRead(socket));
+    assertTrue("Expected connection to proxy server to be open and writable", SocketClientUtil.isSocketReadyToWrite(socket));
+  }
+
+  /**
+   * Tests that the proxy does not close the connection by default after a short-circuit response.
+   */
+  @Test
+  public void testShortCircuitResponseDoesNotCloseConnectionByDefault() throws IOException, InterruptedException {
+    mockServer.when(request().withMethod("GET").withPath("/success"), Times.exactly(1))
+        .respond(response().withStatusCode(500).withBody("this response should never be sent"));
+
+    HttpFilterSource filtersSource = new HttpFilterSourceAdapter() {
+      @Override
+      public HttpFilter filterRequest(HttpRequest originalRequest) {
+        return new HttpFilterAdapter(originalRequest) {
+          @Override
+          public HttpResponse clientToProxyRequest(HttpObject httpObject) {
+            if (httpObject instanceof HttpRequest) {
+              HttpResponse shortCircuitResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+              HttpUtil.setContentLength(shortCircuitResponse, 0);
+              return shortCircuitResponse;
+            } else {
+              return null;
             }
-        } finally {
-            try {
-                if (mockServer != null) {
-                    mockServer.stop();
-                }
-            } finally {
-                if (socket != null) {
-                    socket.close();
-                }
-            }
-        }
-    }
-
-    /**
-     * Tests that the proxy does not close the connection after a successful HTTP 1.1 GET request and response.
-     */
-    @Test
-    public void testHttp11DoesNotCloseConnectionByDefault() throws IOException, InterruptedException {
-        mockServer.when(request()
-                        .withMethod("GET")
-                        .withPath("/success"),
-                Times.exactly(2))
-                .respond(response()
-                        .withStatusCode(200)
-                        .withBody("success"));
-
-        this.proxyServer = DefaultHttpProxyServer.bootstrap()
-                .withPort(0)
-                .start();
-        this.socket = SocketClientUtil.getSocketToProxyServer(proxyServer);
-
-        // construct the basic request: METHOD + URI + HTTP version + CRLF (to indicate the end of the request)
-        String successfulGet = "GET http://localhost:" + mockServerPort + "/success HTTP/1.1\r\n"
-                + "\r\n";
-
-        // send the same request twice over the same connection
-        for (int i = 1; i <= 2; i++) {
-            SocketClientUtil.writeStringToSocket(successfulGet, socket);
-
-            // wait a bit to allow the proxy server to respond
-            Thread.sleep(750);
-
-            String response = SocketClientUtil.readStringFromSocket(socket);
-
-            assertThat("Expected to receive an HTTP 200 from the server (iteration: " + i + ")", response, startsWith("HTTP/1.1 200 OK"));
-            assertThat("Unexpected message body (iteration: " + i + ")", response, endsWith("success"));
-        }
-
-        assertTrue("Expected connection to proxy server to be open and readable", SocketClientUtil.isSocketReadyToRead(socket));
-        assertTrue("Expected connection to proxy server to be open and writable", SocketClientUtil.isSocketReadyToWrite(socket));
-    }
-
-    /**
-     * Tests that the proxy keeps the connection to the client open after a server disconnect, even when the server is using
-     * connection closure to indicate the end of a message.
-     */
-    @Test
-    public void testProxyKeepsClientConnectionOpenAfterServerDisconnect() throws IOException, InterruptedException {
-        mockServer.when(request()
-                        .withMethod("GET")
-                        .withPath("/success"),
-                Times.exactly(2))
-                .respond(response()
-                        .withStatusCode(200)
-                        .withBody("success")
-                        .withConnectionOptions(new ConnectionOptions()
-                                .withKeepAliveOverride(false)
-                                .withSuppressContentLengthHeader(true)
-                                .withCloseSocket(true)));
-
-        this.proxyServer = DefaultHttpProxyServer.bootstrap()
-                .withPort(0)
-                .start();
-        this.socket = SocketClientUtil.getSocketToProxyServer(proxyServer);
-
-        // construct the basic request: METHOD + URI + HTTP version + CRLF (to indicate the end of the request)
-        String successfulGet = "GET http://localhost:" + mockServerPort + "/success HTTP/1.1\r\n"
-                + "\r\n";
-
-        // send the same request twice over the same connection
-        for (int i = 1; i <= 2; i++) {
-            SocketClientUtil.writeStringToSocket(successfulGet, socket);
-
-            // wait a bit to allow the proxy server to respond
-            Thread.sleep(750);
-
-            String response = SocketClientUtil.readStringFromSocket(socket);
-
-            assertThat("Expected to receive an HTTP 200 from the server (iteration: " + i + ")", response, startsWith("HTTP/1.1 200 OK"));
-            // the proxy will set the Transfer-Encoding to chunked since the server is using connection closure to indicate the end of the message.
-            // (matching capitalized or lowercase Transfer-Encoding, since Netty 4.1+ uses lowercase header names)
-            assertThat("Expected proxy to set Transfer-Encoding to chunked", response.toLowerCase(Locale.US), containsString("transfer-encoding: chunked"));
-            // the Transfer-Encoding is chunked, so the body text will be followed by a 0 and 2 CRLFs
-            assertThat("Unexpected message body (iteration: " + i + ")", response, containsString("success"));
-        }
-
-        assertTrue("Expected connection to proxy server to be open and readable", SocketClientUtil.isSocketReadyToRead(socket));
-        assertTrue("Expected connection to proxy server to be open and writable", SocketClientUtil.isSocketReadyToWrite(socket));
-    }
-
-    /**
-     * Tests that the proxy does not close the connection after a 502 Bad Gateway response.
-     */
-    @Test
-    public void testBadGatewayDoesNotCloseConnection() throws IOException, InterruptedException {
-        mockServer.when(request()
-                        .withMethod("GET")
-                        .withPath("/success"),
-                Times.exactly(1))
-                .respond(response()
-                        .withStatusCode(200)
-                        .withBody("success"));
-
-        this.proxyServer = DefaultHttpProxyServer.bootstrap()
-                .withPort(0)
-                .start();
-
-        socket = SocketClientUtil.getSocketToProxyServer(proxyServer);
-
-        String badGatewayGet = "GET http://localhost:0/success HTTP/1.1\r\n"
-                + "\r\n";
-
-        // send the same request twice over the same connection
-        for (int i = 1; i <= 2; i++) {
-            SocketClientUtil.writeStringToSocket(badGatewayGet, socket);
-
-            // wait a bit to allow the proxy server to respond
-            Thread.sleep(1500);
-
-            String response = SocketClientUtil.readStringFromSocket(socket);
-
-            assertThat("Expected to receive an HTTP 200 from the server (iteration: " + i + ")", response, startsWith("HTTP/1.1 502 Bad Gateway"));
-        }
-
-        assertTrue("Expected connection to proxy server to be open and readable", SocketClientUtil.isSocketReadyToRead(socket));
-        assertTrue("Expected connection to proxy server to be open and writable", SocketClientUtil.isSocketReadyToWrite(socket));
-    }
-
-    /**
-     * Tests that the proxy does not close the connection after a 504 Gateway Timeout response.
-     */
-    @Test
-    public void testGatewayTimeoutDoesNotCloseConnection() throws IOException, InterruptedException {
-        mockServer.when(request()
-                        .withMethod("GET")
-                        .withPath("/success"),
-                Times.exactly(2))
-                .respond(response()
-                        .withStatusCode(200)
-                        .withDelay(TimeUnit.SECONDS, 10)
-                        .withBody("success"));
-
-        this.proxyServer = DefaultHttpProxyServer.bootstrap()
-                .withIdleConnectionTimeout(2)
-                .withPort(0)
-                .start();
-
-        socket = SocketClientUtil.getSocketToProxyServer(proxyServer);
-
-        String successfulGet = "GET http://localhost:" + mockServerPort + "/success HTTP/1.1\r\n"
-                + "\r\n";
-
-        // send the same request twice over the same connection
-        for (int i = 1; i <= 2; i++) {
-            SocketClientUtil.writeStringToSocket(successfulGet, socket);
-
-            String response = SocketClientUtil.readStringFromSocket(socket);
-
-	        // match the whole response to make sure that the it is not repeated
-            assertThat("The response is repeated:", response, is("HTTP/1.1 504 Gateway Timeout\r\n" +
-                    "Content-Length: 15\r\n" +
-                    "Content-Type: text/html; charset=utf-8\r\n" +
-                    "\r\n" +
-                    "Gateway Timeout"));
-        }
-
-        assertTrue("Expected connection to proxy server to be open and readable", SocketClientUtil.isSocketReadyToRead(socket));
-        assertTrue("Expected connection to proxy server to be open and writable", SocketClientUtil.isSocketReadyToWrite(socket));
-    }
-
-    /**
-     * Tests that the proxy does not close the connection by default after a short-circuit response.
-     */
-    @Test
-    public void testShortCircuitResponseDoesNotCloseConnectionByDefault() throws IOException, InterruptedException {
-        mockServer.when(request()
-                        .withMethod("GET")
-                        .withPath("/success"),
-                Times.exactly(1))
-                .respond(response()
-                        .withStatusCode(500)
-                        .withBody("this response should never be sent"));
-
-        HttpFilterSource filtersSource = new HttpFilterSourceAdapter() {
-            @Override
-            public HttpFilter filterRequest(HttpRequest originalRequest) {
-                return new HttpFilterAdapter(originalRequest) {
-                    @Override
-                    public HttpResponse clientToProxyRequest(HttpObject httpObject) {
-                        if (httpObject instanceof HttpRequest) {
-                            HttpResponse shortCircuitResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-                            HttpHeaders.setContentLength(shortCircuitResponse, 0);
-                            return shortCircuitResponse;
-                        } else {
-                            return null;
-                        }
-                    }
-                };
-            }
+          }
         };
+      }
+    };
 
-        this.proxyServer = DefaultHttpProxyServer.bootstrap()
-                .withPort(0)
-                .withFiltersSource(filtersSource)
-                .start();
+    this.proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).withFiltersSource(filtersSource).start();
 
-        socket = SocketClientUtil.getSocketToProxyServer(proxyServer);
+    socket = SocketClientUtil.getSocketToProxyServer(proxyServer);
 
-        String successfulGet = "GET http://localhost:" + mockServerPort + "/success HTTP/1.1\r\n"
-                + "\r\n";
+    String successfulGet = "GET http://localhost:" + mockServerPort + "/success HTTP/1.1\r\n" + "\r\n";
 
-        // send the same request twice over the same connection
-        for (int i = 1; i <= 2; i++) {
-            SocketClientUtil.writeStringToSocket(successfulGet, socket);
+    // send the same request twice over the same connection
+    for (int i = 1; i <= 2; i++) {
+      SocketClientUtil.writeStringToSocket(successfulGet, socket);
 
-            // wait a bit to allow the proxy server to respond
-            Thread.sleep(750);
+      // wait a bit to allow the proxy server to respond
+      Thread.sleep(750);
 
-            String response = SocketClientUtil.readStringFromSocket(socket);
+      String response = SocketClientUtil.readStringFromSocket(socket);
 
-            assertThat("Expected to receive an HTTP 200 from the server (iteration: " + i + ")", response, startsWith("HTTP/1.1 200 OK"));
-        }
-
-        assertTrue("Expected connection to proxy server to be open and readable", SocketClientUtil.isSocketReadyToRead(socket));
-        assertTrue("Expected connection to proxy server to be open and writable", SocketClientUtil.isSocketReadyToWrite(socket));
+      MatcherAssert.assertThat("Expected to receive an HTTP 200 from the server (iteration: " + i + ")", response,
+          startsWith("HTTP/1.1 200 OK"));
     }
 
-    /**
-     * Tests that the proxy will close the connection after a short circuit response if the short circuit response
-     * contains a Connection: close header.
-     */
-    @Test
-    public void testShortCircuitResponseCanCloseConnection() throws IOException, InterruptedException {
-        mockServer.when(request()
-                        .withMethod("GET")
-                        .withPath("/success"),
-                Times.exactly(1))
-                .respond(response()
-                        .withStatusCode(500)
-                        .withBody("this response should never be sent"));
+    assertTrue("Expected connection to proxy server to be open and readable", SocketClientUtil.isSocketReadyToRead(socket));
+    assertTrue("Expected connection to proxy server to be open and writable", SocketClientUtil.isSocketReadyToWrite(socket));
+  }
 
-        HttpFilterSource filtersSource = new HttpFilterSourceAdapter() {
-            @Override
-            public HttpFilter filterRequest(HttpRequest originalRequest) {
-                return new HttpFilterAdapter(originalRequest) {
-                    @Override
-                    public HttpResponse clientToProxyRequest(HttpObject httpObject) {
-                        if (httpObject instanceof HttpRequest) {
-                            HttpResponse shortCircuitResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-                            HttpHeaders.setContentLength(shortCircuitResponse, 0);
-                            HttpHeaders.setKeepAlive(shortCircuitResponse, false);
-                            return shortCircuitResponse;
-                        } else {
-                            return null;
-                        }
-                    }
-                };
+  /**
+   * Tests that the proxy will close the connection after a short circuit response if the short circuit response contains
+   * a Connection: close header.
+   */
+  @Test
+  public void testShortCircuitResponseCanCloseConnection() throws IOException, InterruptedException {
+    mockServer.when(request().withMethod("GET").withPath("/success"), Times.exactly(1))
+        .respond(response().withStatusCode(500).withBody("this response should never be sent"));
+
+    HttpFilterSource filtersSource = new HttpFilterSourceAdapter() {
+      @Override
+      public HttpFilter filterRequest(HttpRequest originalRequest) {
+        return new HttpFilterAdapter(originalRequest) {
+          @Override
+          public HttpResponse clientToProxyRequest(HttpObject httpObject) {
+            if (httpObject instanceof HttpRequest) {
+              HttpResponse shortCircuitResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+              HttpUtil.setContentLength(shortCircuitResponse, 0);
+              HttpUtil.setKeepAlive(shortCircuitResponse, false);
+              return shortCircuitResponse;
+            } else {
+              return null;
             }
+          }
         };
+      }
+    };
 
-        this.proxyServer = DefaultHttpProxyServer.bootstrap()
-                .withPort(0)
-                .withFiltersSource(filtersSource)
-                .start();
+    this.proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).withFiltersSource(filtersSource).start();
 
-        socket = SocketClientUtil.getSocketToProxyServer(proxyServer);
+    socket = SocketClientUtil.getSocketToProxyServer(proxyServer);
 
-        String successfulGet = "GET http://localhost:" + mockServerPort + "/success HTTP/1.1\r\n"
-                + "\r\n";
+    String successfulGet = "GET http://localhost:" + mockServerPort + "/success HTTP/1.1\r\n" + "\r\n";
 
-        // only send this request once, since we expect the short circuit response to close the connection
-        SocketClientUtil.writeStringToSocket(successfulGet, socket);
+    // only send this request once, since we expect the short circuit response to close the connection
+    SocketClientUtil.writeStringToSocket(successfulGet, socket);
 
-        // wait a bit to allow the proxy server to respond
-        Thread.sleep(750);
+    // wait a bit to allow the proxy server to respond
+    Thread.sleep(750);
 
-        String response = SocketClientUtil.readStringFromSocket(socket);
+    String response = SocketClientUtil.readStringFromSocket(socket);
 
-        assertThat("Expected to receive an HTTP 200 from the server", response, startsWith("HTTP/1.1 200 OK"));
+    MatcherAssert.assertThat("Expected to receive an HTTP 200 from the server", response, startsWith("HTTP/1.1 200 OK"));
 
-        assertFalse("Expected connection to proxy server to be closed", SocketClientUtil.isSocketReadyToRead(socket));
-        assertFalse("Expected connection to proxy server to be closed", SocketClientUtil.isSocketReadyToWrite(socket));
-    }
+    assertFalse("Expected connection to proxy server to be closed", SocketClientUtil.isSocketReadyToRead(socket));
+    assertFalse("Expected connection to proxy server to be closed", SocketClientUtil.isSocketReadyToWrite(socket));
+  }
 }
 
