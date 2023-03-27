@@ -36,7 +36,7 @@ public class ThreadPoolConfiguration {
    * for processing by client-to-proxy worker threads. The default value is
    * {@link ServerGroup#DEFAULT_INCOMING_ACCEPTOR_THREADS}.
    *
-   * @param acceptorThreads number of acceptor threads to create
+   * @param acceptorThreadSize number of acceptor threads to create
    * @return this thread pool configuration instance, for chaining
    */
   public ThreadPoolConfiguration withAcceptorThreadSize(int acceptorThreadSize) {
@@ -53,7 +53,7 @@ public class ThreadPoolConfiguration {
    * servers and process responses from the server. The default value is
    * {@link ServerGroup#DEFAULT_OUTGOING_WORKER_THREADS}.
    *
-   * @param proxyToServerWorkerThreads number of proxy-to-server worker threads to create
+   * @param proxyToServerWorkerThreadSize number of proxy-to-server worker threads to create
    * @return this thread pool configuration instance, for chaining
    */
   public ThreadPoolConfiguration withProxyToServerWorkerThreadSize(int proxyToServerWorkerThreadSize) {
