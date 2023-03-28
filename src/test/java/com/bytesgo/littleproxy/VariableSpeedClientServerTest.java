@@ -21,7 +21,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.junit.Ignore;
 import org.junit.Test;
-import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.server.DefaultHttpProxyServer;
 
 /**
  * Tests cases where either the client or the server is slower than the other.

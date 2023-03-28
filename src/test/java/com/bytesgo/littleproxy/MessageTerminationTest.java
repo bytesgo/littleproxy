@@ -19,7 +19,9 @@ import org.junit.Test;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.matchers.Times;
 import org.mockserver.model.ConnectionOptions;
-import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.filter.HttpFilterSourceAdapter;
+import com.bytesgo.littleproxy.server.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.server.HttpProxyServer;
 
 public class MessageTerminationTest {
   private ClientAndServer mockServer;

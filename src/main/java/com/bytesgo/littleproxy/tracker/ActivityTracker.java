@@ -4,8 +4,8 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 
 import javax.net.ssl.SSLSession;
-import com.bytesgo.littleproxy.FlowContext;
-import com.bytesgo.littleproxy.FullFlowContext;
+import com.bytesgo.littleproxy.model.FlowContext;
+import com.bytesgo.littleproxy.model.FullFlowContext;
 import java.net.InetSocketAddress;
 
 /**

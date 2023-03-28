@@ -26,7 +26,11 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.filter.HttpFilter;
+import com.bytesgo.littleproxy.filter.HttpFilterAdapter;
+import com.bytesgo.littleproxy.filter.HttpFilterSourceAdapter;
+import com.bytesgo.littleproxy.server.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.server.HttpProxyServer;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
 

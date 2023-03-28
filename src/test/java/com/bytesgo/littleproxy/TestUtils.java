@@ -33,7 +33,7 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
-import com.bytesgo.littleproxy.extras.SelfSignedSslEngineSource;
+import com.bytesgo.littleproxy.ssl.SelfSignedSslEngineSource;
 import com.sun.management.UnixOperatingSystemMXBean;
 
 @SuppressWarnings("restriction")

@@ -2,7 +2,9 @@ package com.bytesgo.littleproxy;
 
 import java.util.Queue;
 import javax.net.ssl.SSLEngine;
-import com.bytesgo.littleproxy.enums.TransportProtocol;
+import com.bytesgo.littleproxy.chain.ProxyChain;
+import com.bytesgo.littleproxy.chain.ProxyChainManager;
+import com.bytesgo.littleproxy.model.enums.TransportProtocol;
 import io.netty.handler.codec.http.HttpRequest;
 
 /**
@@ -15,14 +17,14 @@ public class ChainedProxyWithFallbackToOtherChainedProxyDueToSSLTest extends Bad
     return false;
   }
 
-  protected ChainedProxyManager chainedProxyManager() {
-    return new ChainedProxyManager() {
+  protected ProxyChainManager proxyChainManager() {
+    return new ProxyChainManager() {
       @Override
-      public void lookupChainedProxies(HttpRequest httpRequest, Queue<ChainedProxy> chainedProxies) {
+      public void lookupProxyChain(HttpRequest httpRequest, Queue<ProxyChain> proxyChains) {
         // This first one has a bad cert
-        chainedProxies.add(newChainedProxy());
+        proxyChains.add(newChainedProxy());
         // This 2nd one should work
-        chainedProxies.add(new BaseChainedProxy() {
+        proxyChains.add(new BaseChainedProxy() {
           @Override
           public TransportProtocol getTransportProtocol() {
             return TransportProtocol.TCP;

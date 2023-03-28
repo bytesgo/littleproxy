@@ -9,7 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.matchers.Times;
-import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.server.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.server.HttpProxyServer;
 import com.bytesgo.littleproxy.test.HttpClientUtil;
 
 public class ClonedProxyTest {

@@ -9,8 +9,15 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicLong;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import com.bytesgo.littleproxy.enums.TransportProtocol;
-import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.chain.ProxyChain;
+import com.bytesgo.littleproxy.chain.ProxyChainAdapter;
+import com.bytesgo.littleproxy.chain.ProxyChainManager;
+import com.bytesgo.littleproxy.model.FlowContext;
+import com.bytesgo.littleproxy.model.FullFlowContext;
+import com.bytesgo.littleproxy.model.enums.TransportProtocol;
+import com.bytesgo.littleproxy.server.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.server.HttpProxyServer;
+import com.bytesgo.littleproxy.server.HttpProxyServerBootstrap;
 import com.bytesgo.littleproxy.tracker.ActivityTracker;
 import com.bytesgo.littleproxy.tracker.ActivityTrackerAdapter;
 import io.netty.handler.codec.http.HttpRequest;
@@ -47,7 +54,7 @@ public abstract class BaseChainedProxyTest extends BaseProxyTest {
     REQUESTS_RECEIVED_BY_UPSTREAM.set(0);
     TRANSPORTS_USED.clear();
     this.upstreamProxy = upstreamProxy().start();
-    this.proxyServer = bootstrapProxy().withName("Downstream").withPort(0).withChainProxyManager(chainedProxyManager())
+    this.proxyServer = bootstrapProxy().withName("Downstream").withPort(0).withChainProxyManager(proxyChainManager())
         .plusActivityTracker(DOWNSTREAM_TRACKER).start();
   }
 
@@ -55,16 +62,16 @@ public abstract class BaseChainedProxyTest extends BaseProxyTest {
     return DefaultHttpProxyServer.bootstrap().withName("Upstream").withPort(0).plusActivityTracker(UPSTREAM_TRACKER);
   }
 
-  protected ChainedProxyManager chainedProxyManager() {
-    return new ChainedProxyManager() {
+  protected ProxyChainManager proxyChainManager() {
+    return new ProxyChainManager() {
       @Override
-      public void lookupChainedProxies(HttpRequest httpRequest, Queue<ChainedProxy> chainedProxies) {
-        chainedProxies.add(newChainedProxy());
+      public void lookupProxyChain(HttpRequest httpRequest, Queue<ProxyChain> proxyChains) {
+        proxyChains.add(newChainedProxy());
       }
     };
   }
 
-  protected ChainedProxy newChainedProxy() {
+  protected ProxyChain newChainedProxy() {
     return new BaseChainedProxy();
   }
 
@@ -110,7 +117,7 @@ public abstract class BaseChainedProxyTest extends BaseProxyTest {
         Matchers.is(Matchers.in(TRANSPORTS_USED)));
   }
 
-  protected class BaseChainedProxy extends ChainedProxyAdapter {
+  protected class BaseChainedProxy extends ProxyChainAdapter {
     @Override
     public InetSocketAddress getChainedProxyAddress() {
       try {

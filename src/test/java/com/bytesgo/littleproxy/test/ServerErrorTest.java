@@ -2,8 +2,8 @@ package com.bytesgo.littleproxy.test;
 
 import org.junit.After;
 import org.junit.Test;
-import com.bytesgo.littleproxy.HttpProxyServer;
-import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.server.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.server.HttpProxyServer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

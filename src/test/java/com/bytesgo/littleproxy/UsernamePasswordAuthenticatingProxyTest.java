@@ -1,5 +1,7 @@
 package com.bytesgo.littleproxy;
 
+import com.bytesgo.littleproxy.auth.ProxyAuthenticator;
+
 /**
  * Tests a single proxy that requires username/password authentication.
  */

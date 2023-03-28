@@ -1,9 +1,12 @@
 package com.bytesgo.littleproxy;
 
-import static com.bytesgo.littleproxy.enums.TransportProtocol.TCP;
+import static com.bytesgo.littleproxy.model.enums.TransportProtocol.TCP;
 import javax.net.ssl.SSLEngine;
-import com.bytesgo.littleproxy.enums.TransportProtocol;
-import com.bytesgo.littleproxy.extras.SelfSignedSslEngineSource;
+import com.bytesgo.littleproxy.chain.ProxyChain;
+import com.bytesgo.littleproxy.model.enums.TransportProtocol;
+import com.bytesgo.littleproxy.server.HttpProxyServerBootstrap;
+import com.bytesgo.littleproxy.ssl.SelfSignedSslEngineSource;
+import com.bytesgo.littleproxy.ssl.SslEngineSource;
 
 /**
  * Tests that servers are authenticated and that if they're missing certs, we
@@ -30,7 +33,7 @@ public class BadServerAuthenticationTCPChainedProxyTest extends
     }
 
     @Override
-    protected ChainedProxy newChainedProxy() {
+    protected ProxyChain newChainedProxy() {
         return new BaseChainedProxy() {
             @Override
             public TransportProtocol getTransportProtocol() {

@@ -1,37 +1,36 @@
 package com.bytesgo.littleproxy;
 
 import java.util.Queue;
+import com.bytesgo.littleproxy.chain.ProxyChain;
+import com.bytesgo.littleproxy.chain.ProxyChainAdapter;
+import com.bytesgo.littleproxy.chain.ProxyChainManager;
 import io.netty.handler.codec.http.HttpRequest;
 
 /**
- * Tests a proxy chained to a downstream proxy with an untrusted SSL cert. When
- * the downstream proxy is unavailable, the downstream proxy should just fall
- * back to a direct connection.
+ * Tests a proxy chained to a downstream proxy with an untrusted SSL cert. When the downstream proxy is unavailable, the
+ * downstream proxy should just fall back to a direct connection.
  */
-public class ChainedProxyWithFallbackToDirectDueToSSLTest extends
-        BadServerAuthenticationTCPChainedProxyTest {
-    @Override
-    protected boolean isChained() {
-        // Set this to false since we don't actually expect anything to go
-        // through the chained proxy
-        return false;
-    }
+public class ChainedProxyWithFallbackToDirectDueToSSLTest extends BadServerAuthenticationTCPChainedProxyTest {
+  @Override
+  protected boolean isChained() {
+    // Set this to false since we don't actually expect anything to go
+    // through the chained proxy
+    return false;
+  }
 
-    @Override
-    protected boolean expectBadGatewayForEverything() {
-        return false;
-    }
+  @Override
+  protected boolean expectBadGatewayForEverything() {
+    return false;
+  }
 
-    protected ChainedProxyManager chainedProxyManager() {
-        return new ChainedProxyManager() {
-            @Override
-            public void lookupChainedProxies(HttpRequest httpRequest,
-                    Queue<ChainedProxy> chainedProxies) {
-                // This first one has a bad cert
-                chainedProxies.add(newChainedProxy());
-                chainedProxies
-                        .add(ChainedProxyAdapter.FALLBACK_TO_DIRECT_CONNECTION);
-            }
-        };
-    }
+  protected ProxyChainManager proxyChainManager() {
+    return new ProxyChainManager() {
+      @Override
+      public void lookupProxyChain(HttpRequest httpRequest, Queue<ProxyChain> proxyChains) {
+        // This first one has a bad cert
+        proxyChains.add(newChainedProxy());
+        proxyChains.add(ProxyChainAdapter.FALLBACK_TO_DIRECT_CONNECTION);
+      }
+    };
+  }
 }

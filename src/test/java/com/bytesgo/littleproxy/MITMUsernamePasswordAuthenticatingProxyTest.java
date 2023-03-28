@@ -1,6 +1,7 @@
 package com.bytesgo.littleproxy;
 
-import com.bytesgo.littleproxy.extras.SelfSignedMitmManager;
+import com.bytesgo.littleproxy.auth.ProxyAuthenticator;
+import com.bytesgo.littleproxy.mitm.SelfSignedMitmManager;
 
 /**
  * Tests a single proxy that requires username/password authentication and that

@@ -27,7 +27,11 @@ import org.eclipse.jetty.server.Server;
 import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.Before;
-import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.model.FlowContext;
+import com.bytesgo.littleproxy.model.FullFlowContext;
+import com.bytesgo.littleproxy.server.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.server.HttpProxyServer;
+import com.bytesgo.littleproxy.server.HttpProxyServerBootstrap;
 import com.bytesgo.littleproxy.tracker.ActivityTracker;
 import io.netty.handler.codec.http.HttpRequest;
 

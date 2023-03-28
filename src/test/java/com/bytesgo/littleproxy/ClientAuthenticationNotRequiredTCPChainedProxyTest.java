@@ -1,8 +1,11 @@
 package com.bytesgo.littleproxy;
 
 import javax.net.ssl.SSLEngine;
-import com.bytesgo.littleproxy.enums.TransportProtocol;
-import com.bytesgo.littleproxy.extras.SelfSignedSslEngineSource;
+import com.bytesgo.littleproxy.chain.ProxyChain;
+import com.bytesgo.littleproxy.model.enums.TransportProtocol;
+import com.bytesgo.littleproxy.server.HttpProxyServerBootstrap;
+import com.bytesgo.littleproxy.ssl.SelfSignedSslEngineSource;
+import com.bytesgo.littleproxy.ssl.SslEngineSource;
 
 /**
  * Tests that when client authentication is not required, it doesn't matter what certs the client sends.
@@ -19,7 +22,7 @@ public class ClientAuthenticationNotRequiredTCPChainedProxyTest extends BaseChai
   }
 
   @Override
-  protected ChainedProxy newChainedProxy() {
+  protected ProxyChain newChainedProxy() {
     return new BaseChainedProxy() {
       @Override
       public TransportProtocol getTransportProtocol() {

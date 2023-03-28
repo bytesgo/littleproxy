@@ -9,7 +9,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
-import com.bytesgo.littleproxy.HttpProxyServer;
+import com.bytesgo.littleproxy.server.HttpProxyServer;
 
 /**
  * Utilities for interacting with the proxy server using sockets.

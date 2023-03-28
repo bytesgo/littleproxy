@@ -14,9 +14,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.bytesgo.littleproxy.extras.SelfSignedMitmManager;
-import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
-import com.bytesgo.littleproxy.util.ProxyUtils;
+import com.bytesgo.littleproxy.mitm.SelfSignedMitmManager;
+import com.bytesgo.littleproxy.server.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.server.HttpProxyServerBootstrap;
+import com.bytesgo.littleproxy.util.ProxyUtil;
 
 /**
  * Launches a new HTTP proxy.
@@ -96,10 +97,10 @@ public class Launcher {
 
     if (cmd.hasOption(OPTION_DNSSEC)) {
       final String val = cmd.getOptionValue(OPTION_DNSSEC);
-      if (ProxyUtils.isTrue(val)) {
+      if (ProxyUtil.isTrue(val)) {
         LOG.info("Using DNSSEC");
         bootstrap.withUseDnsSec(true);
-      } else if (ProxyUtils.isFalse(val)) {
+      } else if (ProxyUtil.isFalse(val)) {
         LOG.info("Not using DNSSEC");
         bootstrap.withUseDnsSec(false);
       } else {

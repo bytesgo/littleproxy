@@ -1,7 +1,9 @@
 package com.bytesgo.littleproxy;
 
-import static com.bytesgo.littleproxy.enums.TransportProtocol.*;
-import com.bytesgo.littleproxy.enums.TransportProtocol;
+import static com.bytesgo.littleproxy.model.enums.TransportProtocol.*;
+import com.bytesgo.littleproxy.chain.ProxyChain;
+import com.bytesgo.littleproxy.model.enums.TransportProtocol;
+import com.bytesgo.littleproxy.server.HttpProxyServerBootstrap;
 
 public class MitmWithUnencryptedTCPChainedProxyTest extends MitmWithChainedProxyTest {
     @Override
@@ -11,7 +13,7 @@ public class MitmWithUnencryptedTCPChainedProxyTest extends MitmWithChainedProxy
     }
 
     @Override
-    protected ChainedProxy newChainedProxy() {
+    protected ProxyChain newChainedProxy() {
         return new BaseChainedProxy() {
             @Override
             public TransportProtocol getTransportProtocol() {

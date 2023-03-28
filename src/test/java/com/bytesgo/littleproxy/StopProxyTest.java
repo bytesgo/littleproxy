@@ -1,7 +1,8 @@
 package com.bytesgo.littleproxy;
 
 import org.junit.Test;
-import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.server.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.server.HttpProxyServer;
 
 public class StopProxyTest {
     @Test

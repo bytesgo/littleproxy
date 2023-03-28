@@ -28,8 +28,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.matchers.Times;
-import com.bytesgo.littleproxy.extras.SelfSignedSslEngineSource;
-import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.chain.ProxyChain;
+import com.bytesgo.littleproxy.chain.ProxyChainAdapter;
+import com.bytesgo.littleproxy.chain.ProxyChainManager;
+import com.bytesgo.littleproxy.filter.HttpFilter;
+import com.bytesgo.littleproxy.filter.HttpFilterAdapter;
+import com.bytesgo.littleproxy.filter.HttpFilterSource;
+import com.bytesgo.littleproxy.filter.HttpFilterSourceAdapter;
+import com.bytesgo.littleproxy.host.HostResolver;
+import com.bytesgo.littleproxy.server.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.server.HttpProxyServer;
+import com.bytesgo.littleproxy.ssl.SelfSignedSslEngineSource;
 import com.bytesgo.littleproxy.test.HttpClientUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
@@ -520,10 +529,10 @@ public class HttpFilterTest {
 
     // set up the proxy that the HTTP client will connect to
     this.proxyServer =
-        DefaultHttpProxyServer.bootstrap().withPort(0).withFiltersSource(filtersSource).withChainProxyManager(new ChainedProxyManager() {
+        DefaultHttpProxyServer.bootstrap().withPort(0).withFiltersSource(filtersSource).withChainProxyManager(new ProxyChainManager() {
           @Override
-          public void lookupChainedProxies(HttpRequest httpRequest, Queue<ChainedProxy> chainedProxies) {
-            chainedProxies.add(new ChainedProxyAdapter() {
+          public void lookupProxyChain(HttpRequest httpRequest, Queue<ProxyChain> proxyChains) {
+            proxyChains.add(new ProxyChainAdapter() {
               @Override
               public InetSocketAddress getChainedProxyAddress() {
                 // port 0 is unconnectable
@@ -585,10 +594,10 @@ public class HttpFilterTest {
 
     // set up the proxy that the HTTP client will connect to
     this.proxyServer =
-        DefaultHttpProxyServer.bootstrap().withPort(0).withFiltersSource(filtersSource).withChainProxyManager(new ChainedProxyManager() {
+        DefaultHttpProxyServer.bootstrap().withPort(0).withFiltersSource(filtersSource).withChainProxyManager(new ProxyChainManager() {
           @Override
-          public void lookupChainedProxies(HttpRequest httpRequest, Queue<ChainedProxy> chainedProxies) {
-            chainedProxies.add(new ChainedProxyAdapter() {
+          public void lookupProxyChain(HttpRequest httpRequest, Queue<ProxyChain> proxyChains) {
+            proxyChains.add(new ProxyChainAdapter() {
               @Override
               public InetSocketAddress getChainedProxyAddress() {
                 return chainedProxy.getListenAddress();

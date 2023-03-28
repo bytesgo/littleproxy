@@ -5,7 +5,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import java.net.UnknownHostException;
 import org.junit.Test;
-import com.bytesgo.littleproxy.HostResolver;
+import com.bytesgo.littleproxy.host.HostResolver;
+import com.bytesgo.littleproxy.server.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.server.ProxyToServerConnection;
 
 /**
  * Unit tests for static helper methods in {@link ProxyToServerConnection}.

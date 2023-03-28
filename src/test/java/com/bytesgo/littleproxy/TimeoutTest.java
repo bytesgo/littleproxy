@@ -22,7 +22,8 @@ import org.junit.Test;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.matchers.Times;
 import org.mockserver.model.Delay;
-import com.bytesgo.littleproxy.impl.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.server.DefaultHttpProxyServer;
+import com.bytesgo.littleproxy.server.HttpProxyServer;
 import com.bytesgo.littleproxy.test.SocketClientUtil;
 
 public class TimeoutTest {

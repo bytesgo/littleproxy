@@ -1,8 +1,11 @@
 package com.bytesgo.littleproxy;
 
 import javax.net.ssl.SSLEngine;
-import com.bytesgo.littleproxy.enums.TransportProtocol;
-import com.bytesgo.littleproxy.extras.SelfSignedSslEngineSource;
+import com.bytesgo.littleproxy.chain.ProxyChain;
+import com.bytesgo.littleproxy.model.enums.TransportProtocol;
+import com.bytesgo.littleproxy.server.HttpProxyServerBootstrap;
+import com.bytesgo.littleproxy.ssl.SelfSignedSslEngineSource;
+import com.bytesgo.littleproxy.ssl.SslEngineSource;
 
 /**
  * Tests that servers are authenticated and that if they're missing certs, we get an error.
@@ -23,7 +26,7 @@ public class MitmWithBadServerAuthenticationTCPChainedProxyTest extends MitmWith
   }
 
   @Override
-  protected ChainedProxy newChainedProxy() {
+  protected ProxyChain newChainedProxy() {
     return new BaseChainedProxy() {
       @Override
       public TransportProtocol getTransportProtocol() {

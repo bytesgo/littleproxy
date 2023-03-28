@@ -6,6 +6,9 @@ import java.net.UnknownHostException;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Assert;
+import com.bytesgo.littleproxy.chain.ProxyChain;
+import com.bytesgo.littleproxy.chain.ProxyChainAdapter;
+import com.bytesgo.littleproxy.chain.ProxyChainManager;
 import io.netty.handler.codec.http.HttpRequest;
 
 /**
@@ -22,11 +25,11 @@ public class ChainedProxyWithFallbackTest extends BaseProxyTest {
         this.proxyServer = bootstrapProxy()
                 .withName("Downstream")
                 .withPort(0)
-                .withChainProxyManager(new ChainedProxyManager() {
+                .withChainProxyManager(new ProxyChainManager() {
                     @Override
-                    public void lookupChainedProxies(HttpRequest httpRequest,
-                            Queue<ChainedProxy> chainedProxies) {
-                        chainedProxies.add(new ChainedProxyAdapter() {
+                    public void lookupProxyChain(HttpRequest httpRequest,
+                            Queue<ProxyChain> proxyChains) {
+                        proxyChains.add(new ProxyChainAdapter() {
                             @Override
                             public InetSocketAddress getChainedProxyAddress() {
                                 try {
@@ -45,8 +48,8 @@ public class ChainedProxyWithFallbackTest extends BaseProxyTest {
 
                         });
 
-                        chainedProxies
-                                .add(ChainedProxyAdapter.FALLBACK_TO_DIRECT_CONNECTION);
+                        proxyChains
+                                .add(ProxyChainAdapter.FALLBACK_TO_DIRECT_CONNECTION);
                     }
                 })
                 .start();

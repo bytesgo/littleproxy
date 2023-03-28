@@ -6,7 +6,10 @@ import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Set;
 import org.hamcrest.MatcherAssert;
-import com.bytesgo.littleproxy.extras.SelfSignedMitmManager;
+import com.bytesgo.littleproxy.filter.HttpFilter;
+import com.bytesgo.littleproxy.filter.HttpFilterAdapter;
+import com.bytesgo.littleproxy.filter.HttpFilterSourceAdapter;
+import com.bytesgo.littleproxy.mitm.SelfSignedMitmManager;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpObject;
@@ -32,7 +35,7 @@ public class MitmWithChainedProxyTest extends BaseChainedProxyTest {
     TRANSPORTS_USED.clear();
     this.upstreamProxy = upstreamProxy().start();
 
-    this.proxyServer = bootstrapProxy().withPort(0).withChainProxyManager(chainedProxyManager()).plusActivityTracker(DOWNSTREAM_TRACKER)
+    this.proxyServer = bootstrapProxy().withPort(0).withChainProxyManager(proxyChainManager()).plusActivityTracker(DOWNSTREAM_TRACKER)
         .withManInTheMiddle(new SelfSignedMitmManager()).withFiltersSource(new HttpFilterSourceAdapter() {
           @Override
           public HttpFilter filterRequest(HttpRequest originalRequest) {
