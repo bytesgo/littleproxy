@@ -3,13 +3,13 @@ package com.bytesgo.littleproxy;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.Assert;
-import com.bytesgo.littleproxy.chain.ProxyChain;
+
 import com.bytesgo.littleproxy.chain.ProxyChainAdapter;
+import com.bytesgo.littleproxy.chain.ProxyChainContext;
 import com.bytesgo.littleproxy.chain.ProxyChainManager;
-import io.netty.handler.codec.http.HttpRequest;
 
 /**
  * Tests a proxy chained to a missing downstream proxy. When the downstream
@@ -22,22 +22,18 @@ public class ChainedProxyWithFallbackTest extends BaseProxyTest {
     @Override
     protected void setUp() {
         unableToConnect.set(false);
-        this.proxyServer = bootstrapProxy()
-                .withName("Downstream")
-                .withPort(0)
+        this.proxyServer = bootstrapProxy().withName("Downstream").withPort(0)
                 .withChainProxyManager(new ProxyChainManager() {
                     @Override
-                    public void lookupProxyChain(HttpRequest httpRequest,
-                            Queue<ProxyChain> proxyChains) {
-                        proxyChains.add(new ProxyChainAdapter() {
+                    public void lookupProxyChain(ProxyChainContext proxyChainContext) {
+                        proxyChainContext.getProxyChains().add(new ProxyChainAdapter() {
                             @Override
                             public InetSocketAddress getChainedProxyAddress() {
                                 try {
                                     // using unconnectable port 0
                                     return new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 0);
                                 } catch (UnknownHostException uhe) {
-                                    throw new RuntimeException(
-                                            "Unable to resolve 127.0.0.1?!");
+                                    throw new RuntimeException("Unable to resolve 127.0.0.1?!");
                                 }
                             }
 
@@ -48,18 +44,14 @@ public class ChainedProxyWithFallbackTest extends BaseProxyTest {
 
                         });
 
-                        proxyChains
-                                .add(ProxyChainAdapter.FALLBACK_TO_DIRECT_CONNECTION);
+                        proxyChainContext.getProxyChains().add(ProxyChainAdapter.FALLBACK_TO_DIRECT_CONNECTION);
                     }
-                })
-                .start();
+                }).start();
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-        Assert.assertTrue(
-                "We should have been told that we were unable to connect",
-                unableToConnect.get());
+        Assert.assertTrue("We should have been told that we were unable to connect", unableToConnect.get());
     }
 }
