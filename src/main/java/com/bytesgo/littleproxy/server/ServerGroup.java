@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.bytesgo.littleproxy.config.ProxyServerConfiguration;
 import com.bytesgo.littleproxy.exception.UnknownTransportProtocolException;
 import com.bytesgo.littleproxy.model.enums.TransportProtocol;
 import com.bytesgo.littleproxy.util.NettyUdtUtil;
@@ -105,12 +106,12 @@ public class ServerGroup {
    * @param incomingWorkerThreadSize number of client-to-proxy worker threads per protocol
    * @param outgoingWorkerThreadSize number of proxy-to-server worker threads per protocol
    */
-  public ServerGroup(String name, int incomingAcceptorThreadSize, int incomingWorkerThreadSize, int outgoingWorkerThreadSize) {
+  public ServerGroup(String name, ProxyServerConfiguration proxyServerConfiguration) {
     this.name = name;
     this.serverGroupId = serverGroupCount.getAndIncrement();
-    this.incomingAcceptorThreadSize = incomingAcceptorThreadSize;
-    this.incomingWorkerThreadSize = incomingWorkerThreadSize;
-    this.outgoingWorkerThreadSize = outgoingWorkerThreadSize;
+    this.incomingAcceptorThreadSize = proxyServerConfiguration.getAcceptorThreadSize();
+    this.incomingWorkerThreadSize = proxyServerConfiguration.getClientToProxyWorkerThreadSize();
+    this.outgoingWorkerThreadSize = proxyServerConfiguration.getProxyToServerWorkerThreadSize();
   }
 
   /**

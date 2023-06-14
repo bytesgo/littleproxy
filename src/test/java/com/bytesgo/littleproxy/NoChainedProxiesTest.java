@@ -16,7 +16,8 @@ public class NoChainedProxiesTest extends AbstractProxyTest {
       public void lookupProxyChain(ProxyChainContext proxyChainContext) {
         // Leave list empty
       }
-    }).withIdleConnectionTimeout(1).start();
+    }).withIdleConnectionTimeout(1).build();
+    this.proxyServer.start();
   }
 
   @Test

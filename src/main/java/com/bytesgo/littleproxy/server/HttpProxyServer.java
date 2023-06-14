@@ -38,6 +38,14 @@ public interface HttpProxyServer {
   HttpProxyServerBootstrap clone();
 
   /**
+   * <p>
+   * Build and starts the server.
+   * </p>
+   *
+   */
+  void start();
+
+  /**
    * Stops the server and all related clones. Waits for traffic to stop before shutting down.
    */
   void stop();
@@ -63,4 +71,5 @@ public interface HttpProxyServer {
    * @param writeThrottleBytesPerSecond
    */
   void setThrottle(long readThrottleBytesPerSecond, long writeThrottleBytesPerSecond);
+
 }

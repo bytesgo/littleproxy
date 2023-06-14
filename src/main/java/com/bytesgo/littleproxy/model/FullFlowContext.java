@@ -1,8 +1,8 @@
 package com.bytesgo.littleproxy.model;
 
 import com.bytesgo.littleproxy.chain.ProxyChain;
-import com.bytesgo.littleproxy.server.ClientToProxyConnection;
-import com.bytesgo.littleproxy.server.ProxyToServerConnection;
+import com.bytesgo.littleproxy.server.connection.ClientToProxyConnection;
+import com.bytesgo.littleproxy.server.connection.ProxyToServerConnection;
 
 /**
  * Extension of {@link FlowContext} that provides additional information (which we know after actually processing the

@@ -80,7 +80,8 @@ public class KeepAliveTest {
     mockServer.when(request().withMethod("GET").withPath("/success"), Times.exactly(2))
         .respond(response().withStatusCode(200).withBody("success"));
 
-    this.proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).start();
+    this.proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).build();
+    this.proxyServer.start();
     this.socket = SocketClientUtil.getSocketToProxyServer(proxyServer);
 
     // construct the basic request: METHOD + URI + HTTP version + CRLF (to indicate the end of the request)
@@ -114,7 +115,8 @@ public class KeepAliveTest {
         .respond(response().withStatusCode(200).withBody("success").withConnectionOptions(
             new ConnectionOptions().withKeepAliveOverride(false).withSuppressContentLengthHeader(true).withCloseSocket(true)));
 
-    this.proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).start();
+    this.proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).build();
+    this.proxyServer.start();
     this.socket = SocketClientUtil.getSocketToProxyServer(proxyServer);
 
     // construct the basic request: METHOD + URI + HTTP version + CRLF (to indicate the end of the request)
@@ -152,7 +154,8 @@ public class KeepAliveTest {
     mockServer.when(request().withMethod("GET").withPath("/success"), Times.exactly(1))
         .respond(response().withStatusCode(200).withBody("success"));
 
-    this.proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).start();
+    this.proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).build();
+    this.proxyServer.start();
 
     socket = SocketClientUtil.getSocketToProxyServer(proxyServer);
 
@@ -183,7 +186,8 @@ public class KeepAliveTest {
     mockServer.when(request().withMethod("GET").withPath("/success"), Times.exactly(2))
         .respond(response().withStatusCode(200).withDelay(TimeUnit.SECONDS, 10).withBody("success"));
 
-    this.proxyServer = DefaultHttpProxyServer.bootstrap().withIdleConnectionTimeout(2).withPort(0).start();
+    this.proxyServer = DefaultHttpProxyServer.bootstrap().withIdleConnectionTimeout(2).withPort(0).build();
+    this.proxyServer.start();
 
     socket = SocketClientUtil.getSocketToProxyServer(proxyServer);
 
@@ -230,7 +234,8 @@ public class KeepAliveTest {
       }
     };
 
-    this.proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).withFiltersSource(filtersSource).start();
+    this.proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).withFiltersSource(filtersSource).build();
+    this.proxyServer.start();
 
     socket = SocketClientUtil.getSocketToProxyServer(proxyServer);
 
@@ -281,7 +286,8 @@ public class KeepAliveTest {
       }
     };
 
-    this.proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).withFiltersSource(filtersSource).start();
+    this.proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).withFiltersSource(filtersSource).build();
+    this.proxyServer.start();
 
     socket = SocketClientUtil.getSocketToProxyServer(proxyServer);
 

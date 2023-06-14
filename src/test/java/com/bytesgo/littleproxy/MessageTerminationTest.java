@@ -53,7 +53,8 @@ public class MessageTerminationTest {
         .respond(response().withStatusCode(200).withBody("Success!").withConnectionOptions(
             new ConnectionOptions().withCloseSocket(true).withSuppressConnectionHeader(true).withSuppressContentLengthHeader(true)));
 
-    proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).start();
+    proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).build();
+    this.proxyServer.start();
     int proxyServerPort = proxyServer.getListenAddress().getPort();
 
     HttpClient httpClient = TestUtils.createProxiedHttpClient(proxyServerPort);
@@ -79,7 +80,8 @@ public class MessageTerminationTest {
     mockServer.when(request().withMethod("GET").withPath("/"), Times.unlimited()).respond(response().withStatusCode(200)
         .withBody("Success!").withConnectionOptions(new ConnectionOptions().withCloseSocket(true).withSuppressConnectionHeader(true)));
 
-    proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).start();
+    proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).build();
+    this.proxyServer.start();
     int proxyServerPort = proxyServer.getListenAddress().getPort();
 
     HttpClient httpClient = TestUtils.createProxiedHttpClient(proxyServerPort);
@@ -110,7 +112,8 @@ public class MessageTerminationTest {
       public int getMaximumResponseBufferSizeInBytes() {
         return 100000;
       }
-    }).withPort(0).start();
+    }).withPort(0).build();
+    this.proxyServer.start();
     int proxyServerPort = proxyServer.getListenAddress().getPort();
 
 
@@ -139,7 +142,8 @@ public class MessageTerminationTest {
         .respond(response().withStatusCode(200).withConnectionOptions(
             new ConnectionOptions().withCloseSocket(false).withSuppressConnectionHeader(true).withSuppressContentLengthHeader(true)));
 
-    proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).start();
+    proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).build();
+    this.proxyServer.start();
     int proxyServerPort = proxyServer.getListenAddress().getPort();
 
     HttpClient httpClient = TestUtils.createProxiedHttpClient(proxyServerPort);

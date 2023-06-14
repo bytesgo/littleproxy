@@ -81,7 +81,8 @@ public class DirectRequestTest {
       }
     };
 
-    proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).withFiltersSource(filtersSource).start();
+    proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).withFiltersSource(filtersSource).build();
+    proxyServer.start();
   }
 
   @Test(timeout = 5000)
@@ -127,7 +128,8 @@ public class DirectRequestTest {
               }
             };
           }
-        }).start();
+        }).build();
+    proxyServer.start();
 
     int proxyPort = proxyServer.getListenAddress().getPort();
 
@@ -140,7 +142,8 @@ public class DirectRequestTest {
   }
 
   private void startProxyServer() {
-    proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).start();
+    proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).build();
+    proxyServer.start();
   }
 
 }

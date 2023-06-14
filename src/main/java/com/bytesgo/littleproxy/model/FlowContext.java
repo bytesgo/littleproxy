@@ -3,7 +3,7 @@ package com.bytesgo.littleproxy.model;
 import java.net.InetSocketAddress;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLSession;
-import com.bytesgo.littleproxy.server.ClientToProxyConnection;
+import com.bytesgo.littleproxy.server.connection.ClientToProxyConnection;
 import com.bytesgo.littleproxy.tracker.ActivityTracker;
 
 /**

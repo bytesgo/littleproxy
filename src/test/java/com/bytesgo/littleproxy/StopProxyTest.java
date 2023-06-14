@@ -5,21 +5,19 @@ import com.bytesgo.littleproxy.server.DefaultHttpProxyServer;
 import com.bytesgo.littleproxy.server.HttpProxyServer;
 
 public class StopProxyTest {
-    @Test
-    public void testStop() {
-        HttpProxyServer proxyServer = DefaultHttpProxyServer.bootstrap()
-                .withPort(0)
-                .start();
+  @Test
+  public void testStop() {
+    HttpProxyServer proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).build();
+    proxyServer.start();
 
-        proxyServer.stop();
-    }
+    proxyServer.stop();
+  }
 
-    @Test
-    public void testAbort() {
-        HttpProxyServer proxyServer = DefaultHttpProxyServer.bootstrap()
-                .withPort(0)
-                .start();
+  @Test
+  public void testAbort() {
+    HttpProxyServer proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).build();
+    proxyServer.start();
 
-        proxyServer.abort();
-    }
+    proxyServer.abort();
+  }
 }

@@ -1,4 +1,4 @@
-package com.bytesgo.littleproxy.server;
+package com.bytesgo.littleproxy.server.connection;
 
 import static com.bytesgo.littleproxy.model.enums.ConnectionState.AWAITING_CHUNK;
 import static com.bytesgo.littleproxy.model.enums.ConnectionState.AWAITING_INITIAL;
@@ -9,6 +9,7 @@ import javax.net.ssl.SSLEngine;
 import com.bytesgo.littleproxy.filter.HttpFilter;
 import com.bytesgo.littleproxy.logging.ProxyConnectionLogger;
 import com.bytesgo.littleproxy.model.enums.ConnectionState;
+import com.bytesgo.littleproxy.server.DefaultHttpProxyServer;
 import com.bytesgo.littleproxy.util.ProxyUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -68,7 +69,7 @@ import io.netty.util.concurrent.Promise;
  * 
  * @param <I> the type of "initial" message. This will be either {@link HttpResponse} or {@link HttpRequest}.
  */
-public abstract class ProxyConnection<I extends HttpObject> extends SimpleChannelInboundHandler<Object> {
+public abstract class ProxyConnection<I extends HttpObject> extends SimpleChannelInboundHandler<I> {
   protected final ProxyConnectionLogger LOG = new ProxyConnectionLogger(this);
 
   protected final DefaultHttpProxyServer proxyServer;
@@ -544,7 +545,7 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
    * Adapting the Netty API
    **************************************************************************/
   @Override
-  protected final void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
+  protected final void channelRead0(ChannelHandlerContext ctx, I msg) throws Exception {
     read(msg);
   }
 

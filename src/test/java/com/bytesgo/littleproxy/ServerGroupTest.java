@@ -15,7 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.matchers.Times;
-import com.bytesgo.littleproxy.config.ThreadPoolConfiguration;
+import com.bytesgo.littleproxy.config.ProxyServerConfiguration;
 import com.bytesgo.littleproxy.filter.HttpFilter;
 import com.bytesgo.littleproxy.filter.HttpFilterAdapter;
 import com.bytesgo.littleproxy.filter.HttpFilterSourceAdapter;
@@ -100,8 +100,9 @@ public class ServerGroupTest {
         };
       }
     }).withThreadPoolConfiguration(
-        new ThreadPoolConfiguration().withAcceptorThreadSize(1).withClientToProxyWorkerThreadSize(1).withProxyToServerWorkerThreadSize(1))
-        .start();
+        new ProxyServerConfiguration().withAcceptorThreadSize(1).withClientToProxyWorkerThreadSize(1).withProxyToServerWorkerThreadSize(1))
+        .build();
+    this.proxyServer.start();
 
     // execute both requests in parallel, to increase the chance of blocking due to the single-threaded
     // ThreadPoolConfiguration

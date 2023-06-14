@@ -1,4 +1,4 @@
-package com.bytesgo.littleproxy.server;
+package com.bytesgo.littleproxy.server.connection;
 
 import com.bytesgo.littleproxy.logging.ProxyConnectionLogger;
 import com.bytesgo.littleproxy.model.enums.ConnectionState;

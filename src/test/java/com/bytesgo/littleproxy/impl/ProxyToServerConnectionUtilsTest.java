@@ -7,7 +7,7 @@ import java.net.UnknownHostException;
 import org.junit.Test;
 import com.bytesgo.littleproxy.host.HostResolver;
 import com.bytesgo.littleproxy.server.DefaultHttpProxyServer;
-import com.bytesgo.littleproxy.server.ProxyToServerConnection;
+import com.bytesgo.littleproxy.server.connection.ProxyToServerConnection;
 
 /**
  * Unit tests for static helper methods in {@link ProxyToServerConnection}.

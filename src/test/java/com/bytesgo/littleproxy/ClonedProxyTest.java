@@ -14,107 +14,86 @@ import com.bytesgo.littleproxy.server.HttpProxyServer;
 import com.bytesgo.littleproxy.test.HttpClientUtil;
 
 public class ClonedProxyTest {
-    private ClientAndServer mockServer;
-    private int mockServerPort;
+  private ClientAndServer mockServer;
+  private int mockServerPort;
 
-    private HttpProxyServer originalProxy;
-    private HttpProxyServer clonedProxy;
+  private HttpProxyServer originalProxy;
+  private HttpProxyServer clonedProxy;
 
-    @Before
-    public void setUp() {
-        mockServer = new ClientAndServer(0);
-        mockServerPort = mockServer.getPort();
-    }
+  @Before
+  public void setUp() {
+    mockServer = new ClientAndServer(8080);
+    mockServerPort = mockServer.getPort();
+  }
 
-    @After
-    public void tearDown() {
-        try {
-            if (mockServer != null) {
-                mockServer.stop();
-            }
-        } finally {
-            try {
-                if (originalProxy != null) {
-                    originalProxy.abort();
-                }
-            } finally {
-                if (clonedProxy != null) {
-                    clonedProxy.abort();
-                }
-            }
+  @After
+  public void tearDown() {
+    try {
+      if (mockServer != null) {
+        mockServer.stop();
+      }
+    } finally {
+      try {
+        if (originalProxy != null) {
+          originalProxy.abort();
         }
+      } finally {
+        if (clonedProxy != null) {
+          clonedProxy.abort();
+        }
+      }
     }
+  }
 
-    @Test
-    public void testClonedProxyHandlesRequests() {
-        originalProxy = DefaultHttpProxyServer.bootstrap()
-                .withPort(0)
-                .withName("original")
-                .start();
-        clonedProxy = originalProxy.clone()
-                .withName("clone")
-                .start();
+  @Test
+  public void testClonedProxyHandlesRequests() {
+    originalProxy = DefaultHttpProxyServer.bootstrap().withPort(0).withName("original").build();
+    originalProxy.start();
+    clonedProxy = originalProxy.clone().withName("clone").build();
+    clonedProxy.start();
 
-        mockServer.when(request()
-                        .withMethod("GET")
-                        .withPath("/testClonedProxyHandlesRequests"),
-                Times.exactly(1))
-                .respond(response()
-                                .withStatusCode(200)
-                                .withBody("success")
-                );
+    mockServer.when(request().withMethod("GET").withPath("/testClonedProxyHandlesRequests"), Times.exactly(1))
+        .respond(response().withStatusCode(200).withBody("success"));
 
-        HttpResponse response = HttpClientUtil.performHttpGet("http://localhost:" + mockServerPort + "/testClonedProxyHandlesRequests", clonedProxy);
-        assertEquals("Expected to receive a 200 when making a request using the cloned proxy server", 200, response.getStatusLine().getStatusCode());
-    }
+    HttpResponse response =
+        HttpClientUtil.performHttpGet("http://localhost:" + mockServerPort + "/testClonedProxyHandlesRequests", clonedProxy);
+    assertEquals("Expected to receive a 200 when making a request using the cloned proxy server", 200,
+        response.getStatusLine().getStatusCode());
+  }
 
-    @Test
-    public void testStopClonedProxyDoesNotStopOriginalServer() {
-        originalProxy = DefaultHttpProxyServer.bootstrap()
-                .withPort(0)
-                .withName("original")
-                .start();
-        clonedProxy = originalProxy.clone()
-                .withName("clone")
-                .start();
+  @Test
+  public void testStopClonedProxyDoesNotStopOriginalServer() {
+    originalProxy = DefaultHttpProxyServer.bootstrap().withPort(0).withName("original").build();
+    originalProxy.start();
+    clonedProxy = originalProxy.clone().withName("clone").build();
+    clonedProxy.start();
 
-        clonedProxy.abort();
+    clonedProxy.abort();
 
-        mockServer.when(request()
-                        .withMethod("GET")
-                        .withPath("/testClonedProxyHandlesRequests"),
-                Times.exactly(1))
-                .respond(response()
-                                .withStatusCode(200)
-                                .withBody("success")
-                );
+    mockServer.when(request().withMethod("GET").withPath("/testClonedProxyHandlesRequests"), Times.exactly(1))
+        .respond(response().withStatusCode(200).withBody("success"));
 
-        HttpResponse response = HttpClientUtil.performHttpGet("http://localhost:" + mockServerPort + "/testClonedProxyHandlesRequests", originalProxy);
-        assertEquals("Expected to receive a 200 when making a request using the cloned proxy server", 200, response.getStatusLine().getStatusCode());
-    }
+    HttpResponse response =
+        HttpClientUtil.performHttpGet("http://localhost:" + mockServerPort + "/testClonedProxyHandlesRequests", originalProxy);
+    assertEquals("Expected to receive a 200 when making a request using the cloned proxy server", 200,
+        response.getStatusLine().getStatusCode());
+  }
 
-    @Test
-    public void testStopOriginalServerDoesNotStopClonedServer() {
-        originalProxy = DefaultHttpProxyServer.bootstrap()
-                .withPort(0)
-                .withName("original")
-                .start();
-        clonedProxy = originalProxy.clone()
-                .withName("clone")
-                .start();
+  @Test
+  public void testStopOriginalServerDoesNotStopClonedServer() {
+    originalProxy = DefaultHttpProxyServer.bootstrap().withPort(0).withName("original").build();
+    originalProxy.start();
+    clonedProxy = originalProxy.clone().withName("clone").build();
+    clonedProxy.start();
 
-        originalProxy.abort();
+    originalProxy.abort();
 
-        mockServer.when(request()
-                        .withMethod("GET")
-                        .withPath("/testClonedProxyHandlesRequests"),
-                Times.exactly(1))
-                .respond(response()
-                                .withStatusCode(200)
-                                .withBody("success")
-                );
+    mockServer.when(request().withMethod("GET").withPath("/testClonedProxyHandlesRequests"), Times.exactly(1))
+        .respond(response().withStatusCode(200).withBody("success"));
 
-        HttpResponse response = HttpClientUtil.performHttpGet("http://localhost:" + mockServerPort + "/testClonedProxyHandlesRequests", clonedProxy);
-        assertEquals("Expected to receive a 200 when making a request using the cloned proxy server", 200, response.getStatusLine().getStatusCode());
-    }
+    HttpResponse response =
+        HttpClientUtil.performHttpGet("http://localhost:" + mockServerPort + "/testClonedProxyHandlesRequests", clonedProxy);
+    assertEquals("Expected to receive a 200 when making a request using the cloned proxy server", 200,
+        response.getStatusLine().getStatusCode());
+  }
 }

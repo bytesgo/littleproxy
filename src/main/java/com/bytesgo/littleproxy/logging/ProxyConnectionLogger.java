@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
 import org.slf4j.spi.LocationAwareLogger;
-import com.bytesgo.littleproxy.server.ProxyConnection;
+import com.bytesgo.littleproxy.server.connection.ProxyConnection;
 
 /**
  * <p>

@@ -53,7 +53,8 @@ public class ProxyHeadersTest {
         .respond(response().withStatusCode(200).withBody("success").withHeader("Connection", "Dummy-Header")
             .withHeader("Dummy-Header", "dummy-value").withConnectionOptions(new ConnectionOptions().withSuppressConnectionHeader(true)));
 
-    this.proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).start();
+    this.proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).build();
+    this.proxyServer.start();
 
     HttpClient httpClient = TestUtils.createProxiedHttpClient(proxyServer.getListenAddress().getPort());
     HttpResponse response = httpClient.execute(new HttpGet("http://localhost:" + mockServerPort + "/connectionheaders"));

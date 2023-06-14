@@ -110,7 +110,7 @@ public class Launcher {
     }
 
     System.out.println("About to start...");
-    bootstrap.start();
+    bootstrap.build().start();
   }
 
   private static void printHelp(final Options options, final String errorMessage) {

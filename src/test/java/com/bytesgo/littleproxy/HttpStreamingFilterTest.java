@@ -56,7 +56,8 @@ public class HttpStreamingFilterTest {
           }
         };
       }
-    }).start();
+    }).build();
+    proxyServer.start();
   }
 
   @After

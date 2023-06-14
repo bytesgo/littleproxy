@@ -63,7 +63,8 @@ public class EndToEndStoppingTest {
    * calling System.exit(), which running as an application properly tests.
    */
   public static void main(final String[] args) throws Exception {
-    HttpProxyServer proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).start();
+    HttpProxyServer proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).build();
+    proxyServer.start();
 
     Proxy proxy = new Proxy();
     proxy.setProxyType(Proxy.ProxyType.MANUAL);
@@ -126,7 +127,8 @@ public class EndToEndStoppingTest {
           }
         };
       }
-    }).start();
+    }).build();
+    proxy.start();
 
     try {
       final HttpClient client = TestUtils.createProxiedHttpClient(proxy.getListenAddress().getPort());
@@ -156,7 +158,8 @@ public class EndToEndStoppingTest {
 
   // @Test
   public void testWithWebDriver() throws Exception {
-    HttpProxyServer proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).start();
+    HttpProxyServer proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).build();
+    proxyServer.start();
 
     Proxy proxy = new Proxy();
     proxy.setProxyType(Proxy.ProxyType.MANUAL);

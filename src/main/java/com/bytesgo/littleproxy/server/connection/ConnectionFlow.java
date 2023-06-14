@@ -1,4 +1,4 @@
-package com.bytesgo.littleproxy.server;
+package com.bytesgo.littleproxy.server.connection;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;

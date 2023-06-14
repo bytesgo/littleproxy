@@ -15,81 +15,73 @@ import com.bytesgo.littleproxy.server.DefaultHttpProxyServer;
 import com.bytesgo.littleproxy.server.HttpProxyServer;
 
 /**
- * Note - this test only works on UNIX systems because it checks file descriptor
- * counts.
+ * Note - this test only works on UNIX systems because it checks file descriptor counts.
  */
 public class IdleTest {
-    private static final int NUMBER_OF_CONNECTIONS_TO_OPEN = 2000;
+  private static final int NUMBER_OF_CONNECTIONS_TO_OPEN = 2000;
 
-    private Server webServer;
-    private int webServerPort = -1;
-    private HttpProxyServer proxyServer;
+  private Server webServer;
+  private int webServerPort = -1;
+  private HttpProxyServer proxyServer;
 
-    @Before
-    public void setup() throws Exception {
-        assumeTrue("Skipping due to non-Unix OS", TestUtils.isUnixManagementCapable());
+  @Before
+  public void setup() throws Exception {
+    assumeTrue("Skipping due to non-Unix OS", TestUtils.isUnixManagementCapable());
 
-        assumeFalse("Skipping for travis-ci build", "true".equals(System.getenv("TRAVIS")));
+    assumeFalse("Skipping for travis-ci build", "true".equals(System.getenv("TRAVIS")));
 
-        webServer = new Server(0);
-        webServer.start();
-        webServerPort = TestUtils.findLocalHttpPort(webServer);
+    webServer = new Server(0);
+    webServer.start();
+    webServerPort = TestUtils.findLocalHttpPort(webServer);
 
-        proxyServer = DefaultHttpProxyServer.bootstrap()
-                .withPort(0)
-                .start();
-        proxyServer.setIdleConnectionTimeout(10);
+    proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).build();
+    proxyServer.start();
+    proxyServer.setIdleConnectionTimeout(10);
 
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    try {
+      if (webServer != null) {
+        webServer.stop();
+      }
+    } finally {
+      if (proxyServer != null) {
+        proxyServer.abort();
+      }
+    }
+  }
+
+  @Test
+  public void testFileDescriptorCount() throws Exception {
+    System.out.println("------------------ Memory Usage At Beginning ------------------");
+    long initialFileDescriptors = TestUtils.getOpenFileDescriptorsAndPrintMemoryUsage();
+    Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", proxyServer.getListenAddress().getPort()));
+    for (int i = 0; i < NUMBER_OF_CONNECTIONS_TO_OPEN; i++) {
+      new URL("http://localhost:" + webServerPort).openConnection(proxy).connect();
     }
 
-    @After
-    public void tearDown() throws Exception {
-        try {
-            if (webServer != null) {
-                webServer.stop();
-            }
-        } finally {
-            if (proxyServer != null) {
-                proxyServer.abort();
-            }
-        }
-    }
+    System.gc();
+    System.out.println("\n\n------------------ Memory Usage Before Idle Timeout ------------------");
 
-    @Test
-    public void testFileDescriptorCount() throws Exception {
-        System.out
-                .println("------------------ Memory Usage At Beginning ------------------");
-        long initialFileDescriptors = TestUtils.getOpenFileDescriptorsAndPrintMemoryUsage();
-        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(
-                "127.0.0.1", proxyServer.getListenAddress().getPort()));
-        for (int i = 0; i < NUMBER_OF_CONNECTIONS_TO_OPEN; i++) {
-            new URL("http://localhost:" + webServerPort)
-                    .openConnection(proxy).connect();
-        }
+    long fileDescriptorsWhileConnectionsOpen = TestUtils.getOpenFileDescriptorsAndPrintMemoryUsage();
+    Thread.sleep(10000);
 
-        System.gc();
-        System.out
-                .println("\n\n------------------ Memory Usage Before Idle Timeout ------------------");
+    System.gc();
+    System.out.println("\n\n------------------ Memory Usage After Idle Timeout ------------------");
+    long fileDescriptorsAfterConnectionsClosed = TestUtils.getOpenFileDescriptorsAndPrintMemoryUsage();
 
-        long fileDescriptorsWhileConnectionsOpen = TestUtils.getOpenFileDescriptorsAndPrintMemoryUsage();
-        Thread.sleep(10000);
+    double fdDeltaToOpen = fileDescriptorsWhileConnectionsOpen - initialFileDescriptors;
+    double fdDeltaToClosed = fileDescriptorsAfterConnectionsClosed - initialFileDescriptors;
 
-        System.gc();
-        System.out
-                .println("\n\n------------------ Memory Usage After Idle Timeout ------------------");
-        long fileDescriptorsAfterConnectionsClosed = TestUtils.getOpenFileDescriptorsAndPrintMemoryUsage();
-
-        double fdDeltaToOpen = fileDescriptorsWhileConnectionsOpen
-                - initialFileDescriptors;
-        double fdDeltaToClosed = fileDescriptorsAfterConnectionsClosed
-                - initialFileDescriptors;
-
-        double fdDeltaRatio = fdDeltaToClosed / fdDeltaToOpen;
-        MatcherAssert.assertThat(
-                "Number of file descriptors after close should be much closer to initial value than number of file descriptors while open (+ 1%).\n"
-                        + "Initial file descriptors: " + initialFileDescriptors + "; file descriptors while connections open: " + fileDescriptorsWhileConnectionsOpen + "; "
-                        + "file descriptors after connections closed: " + fileDescriptorsAfterConnectionsClosed + "\n"
-                        + "Ratio of file descriptors after connections are closed to descriptors before connections were closed: " + fdDeltaRatio,
-                fdDeltaRatio, lessThan(0.01));
-    }
+    double fdDeltaRatio = fdDeltaToClosed / fdDeltaToOpen;
+    MatcherAssert.assertThat(
+        "Number of file descriptors after close should be much closer to initial value than number of file descriptors while open (+ 1%).\n"
+            + "Initial file descriptors: " + initialFileDescriptors + "; file descriptors while connections open: "
+            + fileDescriptorsWhileConnectionsOpen + "; " + "file descriptors after connections closed: "
+            + fileDescriptorsAfterConnectionsClosed + "\n"
+            + "Ratio of file descriptors after connections are closed to descriptors before connections were closed: " + fdDeltaRatio,
+        fdDeltaRatio, lessThan(0.01));
+  }
 }

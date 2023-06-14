@@ -86,7 +86,8 @@ public class ThrottlingTest {
     // first with the @FixMethodOrder(MethodSorters.NAME_ASCENDING) annotation on the class.
 
     HttpProxyServer proxyServer =
-        DefaultHttpProxyServer.bootstrap().withPort(0).withThrottling(0, THROTTLED_WRITE_BYTES_PER_SECOND).start();
+        DefaultHttpProxyServer.bootstrap().withPort(0).withThrottling(0, THROTTLED_WRITE_BYTES_PER_SECOND).build();
+    proxyServer.start();
 
     int proxyPort = proxyServer.getListenAddress().getPort();
 
@@ -101,7 +102,8 @@ public class ThrottlingTest {
   @Test
   public void testThrottledWrite() throws Exception {
     HttpProxyServer proxyServer =
-        DefaultHttpProxyServer.bootstrap().withPort(0).withThrottling(0, THROTTLED_WRITE_BYTES_PER_SECOND).start();
+        DefaultHttpProxyServer.bootstrap().withPort(0).withThrottling(0, THROTTLED_WRITE_BYTES_PER_SECOND).build();
+    proxyServer.start();
 
     int proxyPort = proxyServer.getListenAddress().getPort();
 
@@ -125,7 +127,8 @@ public class ThrottlingTest {
 
   @Test
   public void testUnthrottledWrite() throws Exception {
-    HttpProxyServer proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).start();
+    HttpProxyServer proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).build();
+    proxyServer.start();
 
     int proxyPort = proxyServer.getListenAddress().getPort();
 
@@ -148,7 +151,8 @@ public class ThrottlingTest {
 
   @Test
   public void testThrottledRead() throws Exception {
-    HttpProxyServer proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).withThrottling(THROTTLED_READ_BYTES_PER_SECOND, 0).start();
+    HttpProxyServer proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).withThrottling(THROTTLED_READ_BYTES_PER_SECOND, 0).build();
+    proxyServer.start();
 
     int proxyPort = proxyServer.getListenAddress().getPort();
 
@@ -178,7 +182,8 @@ public class ThrottlingTest {
 
   @Test
   public void testUnthrottledRead() throws Exception {
-    HttpProxyServer proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).start();
+    HttpProxyServer proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).build();
+    proxyServer.start();
 
     int proxyPort = proxyServer.getListenAddress().getPort();
 
@@ -207,7 +212,8 @@ public class ThrottlingTest {
 
   @Test
   public void testChangeThrottling() throws IOException {
-    HttpProxyServer proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).withThrottling(THROTTLED_READ_BYTES_PER_SECOND, 0).start();
+    HttpProxyServer proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).withThrottling(THROTTLED_READ_BYTES_PER_SECOND, 0).build();
+    proxyServer.start();
 
     int proxyPort = proxyServer.getListenAddress().getPort();
 
@@ -256,7 +262,8 @@ public class ThrottlingTest {
 
   @Test
   public void testDisableThrottling() throws IOException {
-    HttpProxyServer proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).withThrottling(THROTTLED_READ_BYTES_PER_SECOND, 0).start();
+    HttpProxyServer proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).withThrottling(THROTTLED_READ_BYTES_PER_SECOND, 0).build();
+    proxyServer.start();
 
     int proxyPort = proxyServer.getListenAddress().getPort();
 

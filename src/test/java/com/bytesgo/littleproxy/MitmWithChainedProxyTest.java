@@ -33,7 +33,8 @@ public class MitmWithChainedProxyTest extends BaseChainedProxyTest {
     REQUESTS_SENT_BY_DOWNSTREAM.set(0);
     REQUESTS_RECEIVED_BY_UPSTREAM.set(0);
     TRANSPORTS_USED.clear();
-    this.upstreamProxy = upstreamProxy().start();
+    this.upstreamProxy = upstreamProxy().build();
+    this.upstreamProxy.start();
 
     this.proxyServer = bootstrapProxy().withPort(0).withChainProxyManager(proxyChainManager()).plusActivityTracker(DOWNSTREAM_TRACKER)
         .withManInTheMiddle(new SelfSignedMitmManager()).withFiltersSource(new HttpFilterSourceAdapter() {
@@ -77,7 +78,8 @@ public class MitmWithChainedProxyTest extends BaseChainedProxyTest {
               }
             };
           }
-        }).start();
+        }).build();
+    this.proxyServer.start();
   }
 
   @Override

@@ -71,7 +71,8 @@ public class MitmProxyTest extends BaseProxyTest {
               }
             };
           }
-        }).start();
+        }).build();
+    this.proxyServer.start();
   }
 
   @Override

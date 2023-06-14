@@ -32,16 +32,16 @@ public class ProxyThreadPool {
 
   public ProxyThreadPool(SelectorProvider selectorProvider, int incomingAcceptorThreadSize, int incomingWorkerThreadSize,
       int outgoingWorkerThreadSize, String serverGroupName, int serverGroupId) {
-    clientToProxyAcceptor = new NioEventLoopGroup(incomingAcceptorThreadSize,
+    this.clientToProxyAcceptor = new NioEventLoopGroup(incomingAcceptorThreadSize,
         new NamedThreadFactory(serverGroupName, "ClientToProxyAcceptor", serverGroupId), selectorProvider);
 
-    clientToProxyWorker = new NioEventLoopGroup(incomingWorkerThreadSize,
+    this.clientToProxyWorker = new NioEventLoopGroup(incomingWorkerThreadSize,
         new NamedThreadFactory(serverGroupName, "ClientToProxyWorker", serverGroupId), selectorProvider);
-    clientToProxyWorker.setIoRatio(90);
+    this.clientToProxyWorker.setIoRatio(90);
 
-    proxyToServerWorker = new NioEventLoopGroup(outgoingWorkerThreadSize,
+    this.proxyToServerWorker = new NioEventLoopGroup(outgoingWorkerThreadSize,
         new NamedThreadFactory(serverGroupName, "ProxyToServerWorker", serverGroupId), selectorProvider);
-    proxyToServerWorker.setIoRatio(90);
+    this.proxyToServerWorker.setIoRatio(90);
   }
 
   /**

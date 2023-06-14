@@ -56,7 +56,8 @@ public class TimeoutTest {
 
   @Test
   public void testIdleConnectionTimeout() throws IOException {
-    proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).withIdleConnectionTimeout(1).start();
+    proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).withIdleConnectionTimeout(1).build();
+    proxyServer.start();
 
     mockServer.when(request().withMethod("GET").withPath("/idleconnection"), Times.exactly(1))
         .respond(response().withStatusCode(200).withDelay(new Delay(TimeUnit.SECONDS, 5)));
@@ -82,7 +83,8 @@ public class TimeoutTest {
 
   @Test
   public void testConnectionTimeout() throws IOException {
-    proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).withConnectTimeout(1000).start();
+    proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).withConnectTimeout(1000).build();
+    proxyServer.start();
 
     CloseableHttpClient httpClient = HttpClients.createDefault();
     RequestConfig.Builder requestConfig = RequestConfig.custom();
@@ -108,7 +110,8 @@ public class TimeoutTest {
    */
   @Test
   public void testClientIdleBeforeRequestReceived() throws IOException, InterruptedException {
-    this.proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).withIdleConnectionTimeout(1).start();
+    this.proxyServer = DefaultHttpProxyServer.bootstrap().withPort(0).withIdleConnectionTimeout(1).build();
+    proxyServer.start();
 
     // connect to the proxy and begin to transmit the request, but don't send the trailing \r\n that indicates the client
     // has completely transmitted the request

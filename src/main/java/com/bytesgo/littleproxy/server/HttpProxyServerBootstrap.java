@@ -3,7 +3,7 @@ package com.bytesgo.littleproxy.server;
 import java.net.InetSocketAddress;
 import com.bytesgo.littleproxy.auth.ProxyAuthenticator;
 import com.bytesgo.littleproxy.chain.ProxyChainManager;
-import com.bytesgo.littleproxy.config.ThreadPoolConfiguration;
+import com.bytesgo.littleproxy.config.ProxyServerConfiguration;
 import com.bytesgo.littleproxy.filter.HttpFilterSource;
 import com.bytesgo.littleproxy.host.HostResolver;
 import com.bytesgo.littleproxy.mitm.MitmManager;
@@ -87,13 +87,6 @@ public interface HttpProxyServerBootstrap {
    */
   HttpProxyServerBootstrap withAllowLocalOnly(boolean allowLocalOnly);
 
-  /**
-   * This method has no effect and will be removed in a future release.
-   * 
-   * @deprecated use {@link #withNetworkInterface(InetSocketAddress)} to avoid listening on all local addresses
-   */
-  @Deprecated
-  HttpProxyServerBootstrap withListenOnAllAddresses(boolean listenOnAllAddresses);
 
   /**
    * <p>
@@ -305,14 +298,7 @@ public interface HttpProxyServerBootstrap {
    */
   HttpProxyServerBootstrap withProxyAlias(String alias);
 
-  /**
-   * <p>
-   * Build and starts the server.
-   * </p>
-   *
-   * @return the newly built and started server
-   */
-  HttpProxyServer start();
+  HttpProxyServer build();
 
   /**
    * Set the configuration parameters for the proxy's thread pools.
@@ -320,5 +306,5 @@ public interface HttpProxyServerBootstrap {
    * @param configuration thread pool configuration
    * @return proxy server bootstrap for chaining
    */
-  HttpProxyServerBootstrap withThreadPoolConfiguration(ThreadPoolConfiguration configuration);
+  HttpProxyServerBootstrap withThreadPoolConfiguration(ProxyServerConfiguration configuration);
 }

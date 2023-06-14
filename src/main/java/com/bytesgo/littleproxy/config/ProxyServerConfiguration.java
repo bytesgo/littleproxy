@@ -6,7 +6,7 @@ import com.bytesgo.littleproxy.server.ServerGroup;
  * Configuration object for the proxy's thread pools. Controls the number of acceptor and worker threads in the Netty
  * {@link io.netty.channel.EventLoopGroup} used by the proxy.
  */
-public class ThreadPoolConfiguration {
+public class ProxyServerConfiguration {
   private int acceptorThreadSize = ServerGroup.DEFAULT_INCOMING_ACCEPTOR_THREADS;
   private int clientToProxyWorkerThreadSize = ServerGroup.DEFAULT_INCOMING_WORKER_THREADS;
   private int proxyToServerWorkerThreadSize = ServerGroup.DEFAULT_OUTGOING_WORKER_THREADS;
@@ -22,7 +22,7 @@ public class ThreadPoolConfiguration {
    * @param clientToProxyWorkerThreads number of client-to-proxy worker threads to create
    * @return this thread pool configuration instance, for chaining
    */
-  public ThreadPoolConfiguration withClientToProxyWorkerThreadSize(int clientToProxyWorkerThreadSize) {
+  public ProxyServerConfiguration withClientToProxyWorkerThreadSize(int clientToProxyWorkerThreadSize) {
     this.clientToProxyWorkerThreadSize = clientToProxyWorkerThreadSize;
     return this;
   }
@@ -39,7 +39,7 @@ public class ThreadPoolConfiguration {
    * @param acceptorThreadSize number of acceptor threads to create
    * @return this thread pool configuration instance, for chaining
    */
-  public ThreadPoolConfiguration withAcceptorThreadSize(int acceptorThreadSize) {
+  public ProxyServerConfiguration withAcceptorThreadSize(int acceptorThreadSize) {
     this.acceptorThreadSize = acceptorThreadSize;
     return this;
   }
@@ -56,7 +56,7 @@ public class ThreadPoolConfiguration {
    * @param proxyToServerWorkerThreadSize number of proxy-to-server worker threads to create
    * @return this thread pool configuration instance, for chaining
    */
-  public ThreadPoolConfiguration withProxyToServerWorkerThreadSize(int proxyToServerWorkerThreadSize) {
+  public ProxyServerConfiguration withProxyToServerWorkerThreadSize(int proxyToServerWorkerThreadSize) {
     this.proxyToServerWorkerThreadSize = proxyToServerWorkerThreadSize;
     return this;
   }

@@ -1,4 +1,4 @@
-package com.bytesgo.littleproxy.server;
+package com.bytesgo.littleproxy.server.connection;
 
 import static com.bytesgo.littleproxy.model.enums.ConnectionState.AWAITING_CHUNK;
 import static com.bytesgo.littleproxy.model.enums.ConnectionState.AWAITING_CONNECT_OK;
@@ -26,6 +26,7 @@ import com.bytesgo.littleproxy.mitm.MitmManager;
 import com.bytesgo.littleproxy.model.FullFlowContext;
 import com.bytesgo.littleproxy.model.enums.ConnectionState;
 import com.bytesgo.littleproxy.model.enums.TransportProtocol;
+import com.bytesgo.littleproxy.server.DefaultHttpProxyServer;
 import com.bytesgo.littleproxy.tracker.ActivityTracker;
 import com.bytesgo.littleproxy.util.NettyUdtUtil;
 import com.bytesgo.littleproxy.util.ProxyUtil;
