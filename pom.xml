@@ -11,7 +11,7 @@
 		LittleProxy is a high performance HTTP proxy written in Java and using
 		the Netty networking framework.
 	</description>
-	<url>http://littleproxy.org</url>
+	<url>http://www.github.com/bytesgo/LittleProxy</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -22,7 +22,7 @@
 	</properties>
 	<organization>
 		<name>LittleShoot</name>
-		<url>http://littleproxy.org</url>
+		<url>http://www.github.com/bytesgo/LittleProxy.git</url>
 	</organization>
 	<licenses>
 		<license>
@@ -41,12 +41,12 @@
 	</mailingLists>
 	<issueManagement>
 		<system>github</system>
-		<url>https://github.com/adamfisk/LittleProxy/issues</url>
+		<url>https://github.com/bytesgo/LittleProxy/issues</url>
 	</issueManagement>
 	<scm>
-		<connection>scm:git:https://adamfisk@github.com/adamfisk/LittleProxy.git</connection>
-		<developerConnection>scm:git:git@github.com:adamfisk/LittleProxy</developerConnection>
-		<url>scm:git:git@github.com:adamfisk/LittleProxy.git</url>
+		<connection>scm:git:https://adamfisk@github.com/bytesgo/LittleProxy.git</connection>
+		<developerConnection>scm:git:git@github.com:bytesgo/LittleProxy</developerConnection>
+		<url>scm:git:git@github.com:bytesgo/LittleProxy.git</url>
 		<tag>HEAD</tag>
 	</scm>
 	<distributionManagement>
@@ -116,7 +116,8 @@
 							<source>${java.version}</source>
 							<!-- disable doclint, since Java 8 treats warnings
 							as errors -->
-							<additionalparam>${javadoc.opts}</additionalparam>
+<!--							<additionalparam>${javadoc.opts}</additionalparam>-->
+							<additionalOptions>${javadoc.opts}</additionalOptions>
 						</configuration>
 						<executions>
 							<execution>
@@ -293,7 +294,7 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.4.7</version>
+			<version>1.3.14</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -660,6 +661,17 @@
 				<role>Developer</role>
 			</roles>
 			<timezone>-5</timezone>
+		</developer>
+		<developer>
+			<id>leeyazhou</id>
+			<name>leeyazhou</name>
+			<email>bytesgo@163.com</email>
+			<organization>leeyazhou</organization>
+			<organizationUrl>https://wwww.github.com/leeyazhou</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>+8</timezone>
 		</developer>
 	</developers>
 </project>
