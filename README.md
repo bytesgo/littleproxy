@@ -5,7 +5,7 @@ LittleProxy is a high performance HTTP proxy written in Java atop Trustin Lee's 
 One option is to clone LittleProxy and run it from the command line. This is as simple as:
 
 ```
-$ git clone git://github.com/adamfisk/LittleProxy.git
+$ git clone git://github.com/bytesgo/LittleProxy.git
 $ cd LittleProxy
 $ ./run.bash
 ```
@@ -14,9 +14,9 @@ You can embed LittleProxy in your own projects through Maven with the following:
 
 ```
     <dependency>
-        <groupId>org.littleshoot</groupId>
+        <groupId>com.github.bytesgo</groupId>
         <artifactId>littleproxy</artifactId>
-        <version>1.1.2</version>
+        <version>1.1.6</version>
     </dependency>
 ```
 
