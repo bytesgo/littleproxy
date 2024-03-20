@@ -658,6 +658,14 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
 		return channel;
 	}
 
+	protected void release(HttpRequest httpRequest) {
+		if (httpRequest != null && httpRequest instanceof ReferenceCounted) {
+			if (((ReferenceCounted) httpRequest).refCnt() > 0) {
+				((ReferenceCounted) httpRequest).release();
+			}
+		}
+	}
+
 	/***************************************************************************
 	 * Activity Tracking/Statistics
 	 **************************************************************************/
