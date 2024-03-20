@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/bytesgo/LittleProxy.png?branch=master)](https://travis-ci.org/bytesgo/LittleProxy)
+[![Build Status](https://app.travis-ci.com/bytesgo/littleproxy.svg?token=xnzdS5yERX7KufdXgzER&branch=master)](https://app.travis-ci.com/bytesgo/littleproxy)
 
 LittleProxy is a high performance HTTP proxy written in Java atop Trustin Lee's excellent [Netty](http://netty.io) event-based networking library. It's quite stable, performs well, and is easy to integrate into your projects. 
 
