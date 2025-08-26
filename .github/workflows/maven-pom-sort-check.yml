@@ -21,17 +21,5 @@ jobs:
         distribution: 'temurin'
         cache: 'maven'
 
-    - name: Run SortPom to check and format
+    - name: display-dependency-updates
       run: mvn versions:display-dependency-updates
-
-    # 可选：如果检查失败，自动创建一个格式化PR
-    # - name: Auto-format on failure
-    #   if: failure() # 只有在上一步 check 失败时运行
-    #   run: |
-    #     mvn sortpom:sort
-    #     git config --local user.email "github-actions[bot]@users.noreply.github.com"
-    #     git config --local user.name "github-actions[bot]"
-    #     git commit -am "style: auto-format pom.xml"
-    #     git push
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
