@@ -30,6 +30,7 @@ import com.bytesgo.littleproxy.server.DefaultHttpProxyServer;
 import com.bytesgo.littleproxy.ssl.SslEngineSource;
 import com.bytesgo.littleproxy.tracker.ActivityTracker;
 import com.bytesgo.littleproxy.util.ProxyUtil;
+import com.bytesgo.littleproxy.util.ReferenceCountUtil;
 import com.google.common.io.BaseEncoding;
 
 import io.netty.buffer.ByteBuf;
@@ -37,7 +38,6 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelPipeline;
-import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.DefaultHttpRequest;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
@@ -226,6 +226,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
 		// returns null (meaning the request/response
 		// should not be filtered), fall back to the default no-op filter source.
 		HttpFilter filterInstance = proxyServer.getFiltersSource().filterRequest(currentRequest, ctx);
+		ReferenceCountUtil.release(this.currentRequest);
 		if (filterInstance != null) {
 			currentFilters = filterInstance;
 		} else {
@@ -413,7 +414,6 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
 	void respond(ProxyToServerConnection serverConnection, HttpFilter filters, HttpRequest currentHttpRequest,
 			HttpResponse currentHttpResponse, HttpObject httpObject) {
 		// we are sending a response to the client, so we are done handling this request
-		release(currentHttpRequest);
 		this.currentRequest = null;
 
 		httpObject = filters.serverToProxyResponse(httpObject);
@@ -1002,11 +1002,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
 	 */
 	private HttpRequest copy(HttpRequest original) {
 		if (original instanceof FullHttpRequest) {
-			FullHttpRequest oriReq = ((FullHttpRequest) original);
-			HttpRequest request = new DefaultFullHttpRequest(oriReq.protocolVersion(), oriReq.method(), oriReq.uri(), oriReq.content(),
-					oriReq.headers().copy(), oriReq.trailingHeaders());
-			return request;
-//			return ((FullHttpRequest) original).copy();
+			return ((FullHttpRequest) original).copy();
 		} else {
 			HttpRequest request = new DefaultHttpRequest(original.protocolVersion(), original.method(), original.uri());
 			request.headers().set(original.headers());

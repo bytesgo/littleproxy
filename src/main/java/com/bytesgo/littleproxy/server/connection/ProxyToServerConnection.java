@@ -23,6 +23,7 @@ import com.bytesgo.littleproxy.server.DefaultHttpProxyServer;
 import com.bytesgo.littleproxy.tracker.ActivityTracker;
 import com.bytesgo.littleproxy.util.NettyUdtUtil;
 import com.bytesgo.littleproxy.util.ProxyUtil;
+import com.bytesgo.littleproxy.util.ReferenceCountUtil;
 import com.google.common.net.HostAndPort;
 
 import io.netty.bootstrap.Bootstrap;
@@ -905,7 +906,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
 		// HttpObjectAggregator is in
 		// the pipeline to generate FullHttpRequests), we need to manually release it to
 		// avoid a memory leak.
-		release(initialRequest);
+		ReferenceCountUtil.release(initialRequest);
 	}
 
 	/**

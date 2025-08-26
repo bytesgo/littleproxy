@@ -418,7 +418,7 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
 	 * @param numberOfBytesToBuffer
 	 */
 	protected void aggregateContentForFiltering(ChannelPipeline pipeline, int numberOfBytesToBuffer) {
-		pipeline.addLast("inflater", new HttpContentDecompressor());
+		pipeline.addLast("inflater", new HttpContentDecompressor(false, 0));
 		pipeline.addLast("aggregator", new HttpObjectAggregator(numberOfBytesToBuffer));
 	}
 
@@ -656,14 +656,6 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
 	 */
 	public Channel getChannel() {
 		return channel;
-	}
-
-	protected void release(HttpRequest httpRequest) {
-		if (httpRequest != null && httpRequest instanceof ReferenceCounted) {
-			if (((ReferenceCounted) httpRequest).refCnt() > 0) {
-				((ReferenceCounted) httpRequest).release();
-			}
-		}
 	}
 
 	/***************************************************************************

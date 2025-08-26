@@ -16,7 +16,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<github.global.server>github</github.global.server>
-		<netty.version>4.1.89.Final</netty.version>
+		<netty.version>4.1.124.Final</netty.version>
 		<slf4j.version>2.0.6</slf4j.version>
 		<java.version>1.8</java.version>
 	</properties>
@@ -318,69 +318,11 @@
                  than
 			using netty-all as we do. -->
 			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-all</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-buffer</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-codec</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-codec-haproxy</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-codec-http</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-codec-socks</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-common</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-handler</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-transport</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-transport-rxtx</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-transport-sctp</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-transport-udp</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-example</artifactId>
-				<version>${netty.version}</version>
+			    <groupId>io.netty</groupId>
+			    <artifactId>netty-bom</artifactId>
+			    <version>${netty.version}</version>
+			    <type>pom</type>
+			    <scope>import</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -560,7 +502,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>2.19.1</version>
+				<version>3.5.3</version>
 				<configuration>
 					<showSuccess>false</showSuccess>
 				</configuration>
@@ -590,7 +532,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>3.0.4</version>
+				<version>3.0.5</version>
 				<configuration>
 					<!-- Optional directory to put findbugs xml report -->
 				</configuration>
@@ -603,7 +545,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<version>3.7</version>
+				<version>3.27.0</version>
 				<configuration>
 					<linkXRef>true</linkXRef>
 					<sourceEncoding>utf-8</sourceEncoding>
@@ -634,7 +576,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>taglist-maven-plugin</artifactId>
-				<version>2.4</version>
+				<version>3.2.1</version>
 				<configuration>
 					<multipleLineComments>true</multipleLineComments>
 					<tags>
