@@ -1,6 +1,6 @@
 package com.bytesgo.littleproxy.server.connection;
 
-import com.bytesgo.littleproxy.logging.ProxyConnectionLogger;
+import com.bytesgo.littleproxy.logging.Logger;
 import com.bytesgo.littleproxy.model.enums.ConnectionState;
 import io.netty.util.concurrent.Future;
 
@@ -8,7 +8,7 @@ import io.netty.util.concurrent.Future;
  * Represents a phase in a {@link ConnectionFlow}.
  */
 abstract class ConnectionFlowStep<T> {
-  private final ProxyConnectionLogger LOG;
+  private final Logger logger;
   private final ProxyConnection<?> connection;
   private final ConnectionState state;
 
@@ -22,7 +22,7 @@ abstract class ConnectionFlowStep<T> {
     super();
     this.connection = connection;
     this.state = state;
-    this.LOG = connection.getLOG();
+    this.logger = connection.getLogger();
   }
 
   ProxyConnection<?> getConnection() {
@@ -96,7 +96,7 @@ abstract class ConnectionFlowStep<T> {
    * @param msg the message read from the underlying connection
    */
   void read(ConnectionFlow flow, Object msg) {
-    LOG.debug("Received message while in the middle of connecting: {}", msg);
+    logger.debug("Received message while in the middle of connecting: {}", msg);
   }
 
   @Override

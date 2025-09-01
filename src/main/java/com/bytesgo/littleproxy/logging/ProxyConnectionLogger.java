@@ -9,21 +9,24 @@ import com.bytesgo.littleproxy.server.connection.ProxyConnection;
 
 /**
  * <p>
- * A helper class that logs messages for ProxyConnections. All it does is make sure that the Channel and current state
- * are always included in the log messages (if available).
+ * A helper class that logs messages for ProxyConnections. All it does is make
+ * sure that the Channel and current state are always included in the log
+ * messages (if available).
  * </p>
  *
  * <p>
- * Note that this depends on us using a LocationAwareLogger so that we can report the line numbers of the caller rather
- * than this helper class. If the SLF4J binding does not provide a LocationAwareLogger, then a fallback to Logger is
- * provided.
+ * Note that this depends on us using a LocationAwareLogger so that we can
+ * report the line numbers of the caller rather than this helper class. If the
+ * SLF4J binding does not provide a LocationAwareLogger, then a fallback to
+ * Logger is provided.
  * </p>
  */
-public class ProxyConnectionLogger {
+public class ProxyConnectionLogger implements com.bytesgo.littleproxy.logging.Logger {
   private final ProxyConnection<?> connection;
   private final LogDispatch dispatch;
   private final Logger logger;
-  private final String fqcn = this.getClass().getCanonicalName();
+  private final String fqcn = this.getClass()
+      .getCanonicalName();
 
   public ProxyConnectionLogger(ProxyConnection<?> connection) {
     this.connection = connection;
@@ -97,7 +100,8 @@ public class ProxyConnectionLogger {
   }
 
   private String fullMessage(String message) {
-    String stateMessage = connection.getCurrentState().toString();
+    String stateMessage = connection.getCurrentState()
+        .toString();
     if (connection.isTunneling()) {
       stateMessage += " {tunneling}";
     }
@@ -109,7 +113,8 @@ public class ProxyConnectionLogger {
   }
 
   /**
-   * Fallback dispatch if a LocationAwareLogger is not available from the SLF4J LoggerFactory.
+   * Fallback dispatch if a LocationAwareLogger is not available from the SLF4J
+   * LoggerFactory.
    */
   private class LoggerDispatch implements LogDispatch {
     @Override
@@ -165,7 +170,8 @@ public class ProxyConnectionLogger {
     public void doLog(int level, String message, Object[] params, Throwable t) {
       String formattedMessage = fullMessage(message);
       if (params != null && params.length > 0) {
-        formattedMessage = MessageFormatter.arrayFormat(formattedMessage, params).getMessage();
+        formattedMessage = MessageFormatter.arrayFormat(formattedMessage, params)
+            .getMessage();
       }
       logger.log(null, fqcn, level, formattedMessage, null, t);
     }

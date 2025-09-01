@@ -2,14 +2,15 @@ package com.bytesgo.littleproxy.server.connection;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import com.bytesgo.littleproxy.logging.ProxyConnectionLogger;
+import com.bytesgo.littleproxy.logging.Logger;
 import com.bytesgo.littleproxy.model.enums.ConnectionState;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
 /**
- * Coordinates the various steps involved in establishing a connection, such as establishing a socket connection, SSL
- * handshaking, HTTP CONNECT request processing, and so on.
+ * Coordinates the various steps involved in establishing a connection, such as
+ * establishing a socket connection, SSL handshaking, HTTP CONNECT request
+ * processing, and so on.
  */
 public class ConnectionFlow {
   private Queue<ConnectionFlowStep<?>> steps = new ConcurrentLinkedQueue<ConnectionFlowStep<?>>();
@@ -21,15 +22,18 @@ public class ConnectionFlow {
   private final Object connectLock;
 
   /**
-   * Construct a new {@link ConnectionFlow} for the given client and server connections.
+   * Construct a new {@link ConnectionFlow} for the given client and server
+   * connections.
    * 
    * @param clientConnection
    * @param serverConnection
-   * @param connectLock an object that's shared by {@link ConnectionFlow} and {@link ProxyToServerConnection} and that is
-   *        used for synchronizing the reader and writer threads that are both involved during the establishing of a
-   *        connection.
+   * @param connectLock an object that's shared by {@link ConnectionFlow} and
+   *        {@link ProxyToServerConnection} and that is used for synchronizing the
+   *        reader and writer threads that are both involved during the
+   *        establishing of a connection.
    */
-  public ConnectionFlow(ClientToProxyConnection clientConnection, ProxyToServerConnection serverConnection, Object connectLock) {
+  public ConnectionFlow(ClientToProxyConnection clientConnection, ProxyToServerConnection serverConnection,
+      Object connectLock) {
     super();
     this.clientConnection = clientConnection;
     this.serverConnection = serverConnection;
@@ -48,8 +52,9 @@ public class ConnectionFlow {
   }
 
   /**
-   * While we're in the process of connecting, any messages read by the {@link ProxyToServerConnection} are passed to this
-   * method, which passes it on to {@link ConnectionFlowStep#read(ConnectionFlow, Object)} for the current
+   * While we're in the process of connecting, any messages read by the
+   * {@link ProxyToServerConnection} are passed to this method, which passes it on
+   * to {@link ConnectionFlowStep#read(ConnectionFlow, Object)} for the current
    * {@link ConnectionFlowStep}.
    * 
    * @param msg
@@ -61,7 +66,8 @@ public class ConnectionFlow {
   }
 
   /**
-   * Starts the connection flow, notifying the {@link ClientToProxyConnection} that we've started.
+   * Starts the connection flow, notifying the {@link ClientToProxyConnection}
+   * that we've started.
    */
   void start() {
     clientConnection.serverConnectionFlowStarted(serverConnection);
@@ -70,7 +76,8 @@ public class ConnectionFlow {
 
   /**
    * <p>
-   * Advances the flow. {@link #advance()} will be called until we're either out of steps, or a step has failed.
+   * Advances the flow. {@link #advance()} will be called until we're either out
+   * of steps, or a step has failed.
    * </p>
    */
   void advance() {
@@ -88,87 +95,99 @@ public class ConnectionFlow {
    * </p>
    * 
    * <ol>
-   * <li>Change the state of the associated {@link ProxyConnection} to the value of
-   * {@link ConnectionFlowStep#getState()}</li>
+   * <li>Change the state of the associated {@link ProxyConnection} to the value
+   * of {@link ConnectionFlowStep#getState()}</li>
    * <li>Call {@link ConnectionFlowStep#execute()}</li>
-   * <li>On completion of the {@link Future} returned by {@link ConnectionFlowStep#execute()}, check the success.</li>
-   * <li>If successful, we call back into {@link ConnectionFlowStep#onSuccess(ConnectionFlow)}.</li>
-   * <li>If unsuccessful, we call {@link #fail()}, stopping the connection flow</li>
+   * <li>On completion of the {@link Future} returned by
+   * {@link ConnectionFlowStep#execute()}, check the success.</li>
+   * <li>If successful, we call back into
+   * {@link ConnectionFlowStep#onSuccess(ConnectionFlow)}.</li>
+   * <li>If unsuccessful, we call {@link #fail()}, stopping the connection
+   * flow</li>
    * </ol>
    */
   private void processCurrentStep() {
     final ProxyConnection<?> connection = currentStep.getConnection();
-    final ProxyConnectionLogger LOG = connection.getLOG();
+    final Logger LOG = connection.getLogger();
 
     LOG.debug("Processing connection flow step: {}", currentStep);
     connection.become(currentStep.getState());
     suppressInitialRequest = suppressInitialRequest || currentStep.shouldSuppressInitialRequest();
 
     if (currentStep.shouldExecuteOnEventLoop()) {
-      connection.ctx.executor().submit(new Runnable() {
-        @Override
-        public void run() {
-          doProcessCurrentStep(LOG);
-        }
-      });
+      connection.ctx.executor()
+          .submit(new Runnable() {
+            @Override
+            public void run() {
+              doProcessCurrentStep(LOG);
+            }
+          });
     } else {
       doProcessCurrentStep(LOG);
     }
   }
 
   /**
-   * Does the work of processing the current step, checking the result and handling success/failure.
+   * Does the work of processing the current step, checking the result and
+   * handling success/failure.
    * 
    * @param LOG
    */
-  private void doProcessCurrentStep(final ProxyConnectionLogger LOG) {
-    currentStep.execute().addListener(new GenericFutureListener<Future<Object>>() {
-      public void operationComplete(Future<Object> future) throws Exception {
-        synchronized (connectLock) {
-          if (future.isSuccess()) {
-            LOG.debug("ConnectionFlowStep succeeded");
-            currentStep.onSuccess(ConnectionFlow.this);
-          } else {
-            LOG.debug("ConnectionFlowStep failed", future.cause());
-            fail(future.cause());
-          }
-        }
-      };
-    });
+  private void doProcessCurrentStep(final Logger LOG) {
+    currentStep.execute()
+        .addListener(new GenericFutureListener<Future<Object>>() {
+          public void operationComplete(Future<Object> future) throws Exception {
+            synchronized (connectLock) {
+              if (future.isSuccess()) {
+                LOG.debug("ConnectionFlowStep succeeded");
+                currentStep.onSuccess(ConnectionFlow.this);
+              } else {
+                LOG.debug("ConnectionFlowStep failed", future.cause());
+                fail(future.cause());
+              }
+            }
+          };
+        });
   }
 
   /**
-   * Called when the flow is complete and successful. Notifies the {@link ProxyToServerConnection} that we succeeded.
+   * Called when the flow is complete and successful. Notifies the
+   * {@link ProxyToServerConnection} that we succeeded.
    */
   void succeed() {
     synchronized (connectLock) {
-      serverConnection.getLOG().debug("Connection flow completed successfully: {}", currentStep);
+      serverConnection.getLogger()
+          .debug("Connection flow completed successfully: {}", currentStep);
       serverConnection.connectionSucceeded(!suppressInitialRequest);
       notifyThreadsWaitingForConnection();
     }
   }
 
   /**
-   * Called when the flow fails at some {@link ConnectionFlowStep}. Disconnects the {@link ProxyToServerConnection} and
-   * informs the {@link ClientToProxyConnection} that our connection failed.
+   * Called when the flow fails at some {@link ConnectionFlowStep}. Disconnects
+   * the {@link ProxyToServerConnection} and informs the
+   * {@link ClientToProxyConnection} that our connection failed.
    */
   void fail(final Throwable cause) {
     final ConnectionState lastStateBeforeFailure = serverConnection.getCurrentState();
-    serverConnection.disconnect().addListener(new GenericFutureListener<Future<Void>>() {
-      @Override
-      public void operationComplete(Future<Void> future) throws Exception {
-        synchronized (connectLock) {
-          if (!clientConnection.serverConnectionFailed(serverConnection, lastStateBeforeFailure, cause)) {
-            // the connection to the server failed and we are not retrying, so transition to the
-            // DISCONNECTED state
-            serverConnection.become(ConnectionState.DISCONNECTED);
+    serverConnection.disconnect()
+        .addListener(new GenericFutureListener<Future<Void>>() {
+          @Override
+          public void operationComplete(Future<Void> future) throws Exception {
+            synchronized (connectLock) {
+              if (!clientConnection.serverConnectionFailed(serverConnection, lastStateBeforeFailure, cause)) {
+                // the connection to the server failed and we are not retrying, so transition to
+                // the
+                // DISCONNECTED state
+                serverConnection.become(ConnectionState.DISCONNECTED);
 
-            // We are not retrying our connection, let anyone waiting for a connection know that we're done
-            notifyThreadsWaitingForConnection();
+                // We are not retrying our connection, let anyone waiting for a connection know
+                // that we're done
+                notifyThreadsWaitingForConnection();
+              }
+            }
           }
-        }
-      }
-    });
+        });
   }
 
   /**
@@ -179,8 +198,9 @@ public class ConnectionFlow {
   }
 
   /**
-   * Once we've finished recording our connection and written our initial request, we can notify anyone who is waiting on
-   * the connection that it's okay to proceed.
+   * Once we've finished recording our connection and written our initial request,
+   * we can notify anyone who is waiting on the connection that it's okay to
+   * proceed.
    */
   private void notifyThreadsWaitingForConnection() {
     connectLock.notifyAll();
