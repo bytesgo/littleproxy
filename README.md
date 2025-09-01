@@ -1,5 +1,3 @@
-[![Build Status](https://app.travis-ci.com/bytesgo/littleproxy.svg?token=xnzdS5yERX7KufdXgzER&branch=master)](https://app.travis-ci.com/bytesgo/littleproxy)
-
 LittleProxy is a high performance HTTP proxy written in Java atop Trustin Lee's excellent [Netty](http://netty.io) event-based networking library. It's quite stable, performs well, and is easy to integrate into your projects. 
 
 One option is to clone LittleProxy and run it from the command line. This is as simple as:
@@ -16,7 +14,7 @@ You can embed LittleProxy in your own projects through Maven with the following:
     <dependency>
         <groupId>com.github.bytesgo</groupId>
         <artifactId>littleproxy</artifactId>
-        <version>1.1.6</version>
+        <version>1.1.8</version>
     </dependency>
 ```
 
@@ -157,3 +155,7 @@ Acknowledgments
 Many thanks to [The Measurement Factory](http://www.measurement-factory.com/) for the
 use of [Co-Advisor](http://coad.measurement-factory.com/) for HTTP standards
 compliance testing. 
+
+## Star History
+
+[![LittleProxy](https://api.star-history.com/svg?repos=bytesgo/littleproxy&type=Date)](https://www.star-history.com/#bytesgo/littleproxy&Date)
