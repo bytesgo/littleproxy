@@ -1,12 +1,13 @@
 package com.bytesgo.littleproxy;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.UnrecognizedOptionException;
@@ -119,8 +120,13 @@ public class Launcher {
       System.err.println(errorMessage);
     }
 
-    final HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp("littleproxy", options);
+    final HelpFormatter formatter = HelpFormatter.builder().get();
+    try {
+      formatter.printHelp("littleproxy", null, options, null, false);
+    } catch (IOException e) {
+      System.err.println("Could not print help: " + e.getMessage());
+      e.printStackTrace();
+    }
   }
 
   private static void pollLog4JConfigurationFileIfAvailable() {

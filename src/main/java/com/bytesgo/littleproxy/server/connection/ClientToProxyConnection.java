@@ -226,7 +226,6 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
 		// returns null (meaning the request/response
 		// should not be filtered), fall back to the default no-op filter source.
 		HttpFilter filterInstance = proxyServer.getFiltersSource().filterRequest(currentRequest, ctx);
-		ReferenceCountUtil.release(this.currentRequest);
 		if (filterInstance != null) {
 			currentFilters = filterInstance;
 		} else {
@@ -414,6 +413,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
 	void respond(ProxyToServerConnection serverConnection, HttpFilter filters, HttpRequest currentHttpRequest,
 			HttpResponse currentHttpResponse, HttpObject httpObject) {
 		// we are sending a response to the client, so we are done handling this request
+	    ReferenceCountUtil.release(this.currentRequest);
 		this.currentRequest = null;
 
 		httpObject = filters.serverToProxyResponse(httpObject);
@@ -1234,6 +1234,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
 	 */
 	private boolean respondWithShortCircuitResponse(HttpResponse httpResponse) {
 		// we are sending a response to the client, so we are done handling this request
+	    ReferenceCountUtil.release(this.currentRequest);
 		this.currentRequest = null;
 
 		HttpResponse filteredResponse = (HttpResponse) currentFilters.proxyToClientResponse(httpResponse);
