@@ -537,7 +537,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
     this.connectionFlow = new ConnectionFlow(clientConnection, this, connectLock).then(ConnectChannel);
 
     if (proxyChain != null && proxyChain.requiresEncryption()) {
-      connectionFlow.then(serverConnection.EncryptChannel(proxyChain.newSslEngine()));
+      connectionFlow.then(serverConnection.encryptChannel(proxyChain.newSslEngine()));
     }
 
     if (ProxyUtil.isCONNECT(initialRequest)) {
@@ -559,10 +559,10 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
         // connect to the server
         // with SNI enabled.
         if (disableSni) {
-          connectionFlow.then(serverConnection.EncryptChannel(proxyServer.getMitmManager()
+          connectionFlow.then(serverConnection.encryptChannel(proxyServer.getMitmManager()
               .serverSslEngine()));
         } else {
-          connectionFlow.then(serverConnection.EncryptChannel(proxyServer.getMitmManager()
+          connectionFlow.then(serverConnection.encryptChannel(proxyServer.getMitmManager()
               .serverSslEngine(parsedHostAndPort.getHost(), parsedHostAndPort.getPort())));
         }
 
@@ -658,11 +658,13 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
           }
         }
 
+        @Override
         void onSuccess(ConnectionFlow flow) {
           // Do nothing, since we want to wait for the CONNECT response to
           // come back
         }
 
+        @Override
         void read(ConnectionFlow flow, Object msg) {
           // Here we're handling the response from a chained proxy to our
           // earlier CONNECT request
@@ -709,9 +711,9 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
         protected Future<Channel> execute() {
           return clientConnection.encrypt(proxyServer.getMitmManager()
               .clientSslEngineFor(initialRequest, sslEngine.getSession()), false)
-              .addListener(new GenericFutureListener<Future<? super Channel>>() {
+              .addListener(new GenericFutureListener<Future<Channel>>() {
                 @Override
-                public void operationComplete(Future<? super Channel> future) throws Exception {
+                public void operationComplete(Future<Channel> future) throws Exception {
                   if (future.isSuccess()) {
                     clientConnection.setMitming(true);
                   }

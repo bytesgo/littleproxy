@@ -121,7 +121,7 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
       readRaw((ByteBuf) msg);
     } else {
       // If not tunneling, then we are always dealing with HttpObjects.
-      readHTTP((HttpObject) msg);
+      readHTTP(msg);
     }
   }
 
@@ -130,13 +130,12 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
    * 
    * @param httpObject
    */
-  @SuppressWarnings("unchecked")
-  private void readHTTP(HttpObject httpObject) {
+  private void readHTTP(I httpObject) {
     ConnectionState nextState = getCurrentState();
     switch (getCurrentState()) {
       case AWAITING_INITIAL:
         if (httpObject instanceof HttpMessage) {
-          nextState = readHTTPInitial((I) httpObject);
+          nextState = readHTTPInitial(httpObject);
         } else {
           // Similar to the AWAITING_PROXY_AUTHENTICATION case below, we may enter an
           // AWAITING_INITIAL
@@ -158,7 +157,7 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
       case AWAITING_PROXY_AUTHENTICATION:
         if (httpObject instanceof HttpRequest) {
           // Once we get an HttpRequest, try to process it as usual
-          nextState = readHTTPInitial((I) httpObject);
+          nextState = readHTTPInitial(httpObject);
         } else {
           // Anything that's not an HttpRequest that came in while
           // we're pending authentication gets dropped on the floor. This
@@ -393,7 +392,7 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
    * 
    * @param sslEngine the {@link SSLEngine} for doing the encryption
    */
-  protected ConnectionFlowStep<Channel> EncryptChannel(final SSLEngine sslEngine) {
+  protected ConnectionFlowStep<Channel> encryptChannel(final SSLEngine sslEngine) {
 
     return new ConnectionFlowStep<Channel>(this, ConnectionState.HANDSHAKING) {
       @Override
