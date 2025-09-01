@@ -1,5 +1,7 @@
 package com.bytesgo.littleproxy.model.enums;
 
+import com.bytesgo.littleproxy.server.connection.ConnectionFlow;
+
 /**
  * 
  * @author leeyazhou
