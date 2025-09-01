@@ -192,7 +192,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
    **************************************************************************/
 
   @Override
-  protected void read(Object msg) {
+  protected void read(HttpResponse msg) {
     if (isConnecting()) {
       LOGGER.debug("In the middle of connecting, forwarding message to connection flow: {}", msg);
       this.connectionFlow.read(msg);

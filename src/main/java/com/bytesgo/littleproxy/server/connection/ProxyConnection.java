@@ -71,7 +71,7 @@ import io.netty.util.concurrent.Promise;
  * @param <I> the type of "initial" message. This will be either
  *        {@link HttpResponse} or {@link HttpRequest}.
  */
-public abstract class ProxyConnection<I extends HttpObject> extends SimpleChannelInboundHandler<Object> {
+public abstract class ProxyConnection<I extends HttpObject> extends SimpleChannelInboundHandler<I> {
   protected final Logger LOGGER = new ProxyConnectionLogger(this);
 
   protected final DefaultHttpProxyServer proxyServer;
@@ -112,7 +112,7 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
    * 
    * @param msg
    */
-  protected void read(Object msg) {
+  protected void read(I msg) {
     LOGGER.debug("Reading: {}", msg);
     this.lastReadTime = System.currentTimeMillis();
 
@@ -570,7 +570,7 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
    * Adapting the Netty API
    **************************************************************************/
   @Override
-  protected final void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
+  protected final void channelRead0(ChannelHandlerContext ctx, I msg) throws Exception {
     read(msg);
   }
 
