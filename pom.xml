@@ -584,6 +584,16 @@
     </profile>
     <profile>
       <id>release</id>
+      <distributionManagement>
+        <repository>
+          <id>ossrh</id>
+          <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+        <snapshotRepository>
+          <id>ossrh</id>
+          <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </snapshotRepository>
+      </distributionManagement>
       <properties>
         <javadoc.opts>-Xdoclint:none</javadoc.opts>
       </properties>
@@ -601,8 +611,10 @@
                 </goals>
                 <phase>verify</phase>
                 <configuration>
-                  <executable>${gpg.executable}</executable>
-                  <passphrase>${gpg.passphrase}</passphrase>
+                  <gpgArguments>
+                    <arg>--pinentry-mode</arg>
+                    <arg>loopback</arg>
+                  </gpgArguments>
                 </configuration>
               </execution>
             </executions>
@@ -667,7 +679,7 @@
           <plugin>
             <groupId>org.sonatype.plugins</groupId>
             <artifactId>nexus-staging-maven-plugin</artifactId>
-            <version>1.6.8</version>
+            <version>1.7.0</version>
             <extensions>true</extensions>
             <configuration>
               <serverId>ossrh</serverId>
