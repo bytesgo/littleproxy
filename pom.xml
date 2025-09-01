@@ -434,14 +434,7 @@
           <encoding>UTF-8</encoding>
           <skip>false</skip>
           <sortDependencies>scope,groupId,artifactId</sortDependencies>
-          <sortPlugins>
-            <scope>compile</scope>
-            <scope>provided</scope>
-            <scope>runtime</scope>
-            <scope>test</scope>
-            <scope>system</scope>
-            <scope>import</scope>
-          </sortPlugins>
+          <sortPlugins>groupId,artifactId</sortPlugins>
         </configuration>
       </plugin>
       <plugin>
