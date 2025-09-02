@@ -11,7 +11,7 @@ import io.netty.util.ReferenceCounted;
  */
 public class ReferenceCountUtil {
 
-	public static boolean release(HttpRequest httpRequest) {
+	public static boolean releaseIfNecessary(HttpRequest httpRequest) {
 		if (httpRequest != null && httpRequest instanceof ReferenceCounted) {
 			if (((ReferenceCounted) httpRequest).refCnt() > 0) {
 				((ReferenceCounted) httpRequest).release();

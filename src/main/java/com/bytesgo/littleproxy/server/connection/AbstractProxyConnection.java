@@ -71,7 +71,8 @@ import io.netty.util.concurrent.Promise;
  * @param <I> the type of "initial" message. This will be either
  *        {@link HttpResponse} or {@link HttpRequest}.
  */
-public abstract class ProxyConnection<I extends HttpObject> extends SimpleChannelInboundHandler<I> {
+public abstract class AbstractProxyConnection<I extends HttpObject> extends SimpleChannelInboundHandler<I>
+    implements ConnectionLifecycle<I> {
   protected final Logger LOGGER = new ProxyConnectionLogger(this);
 
   protected final DefaultHttpProxyServer proxyServer;
@@ -80,8 +81,8 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
   protected volatile ChannelHandlerContext ctx;
   protected volatile Channel channel;
 
-  private volatile ConnectionState currentState;
-  private volatile boolean tunneling = false;
+  protected volatile ConnectionState currentState;
+  protected volatile boolean tunneling = false;
   protected volatile long lastReadTime = 0;
 
   /**
@@ -97,8 +98,9 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
    * @param runsAsSslClient determines whether this connection acts as an SSL
    *        client or server (determines who does the handshake)
    */
-  protected ProxyConnection(ConnectionState initialState, DefaultHttpProxyServer proxyServer, boolean runsAsSslClient) {
-    become(initialState);
+  protected AbstractProxyConnection(ConnectionState initialState, DefaultHttpProxyServer proxyServer,
+      boolean runsAsSslClient) {
+    this.become(initialState);
     this.proxyServer = proxyServer;
     this.runsAsSslClient = runsAsSslClient;
   }
@@ -188,30 +190,6 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
     become(nextState);
   }
 
-  /**
-   * Implement this to handle reading the initial object (e.g. {@link HttpRequest}
-   * or {@link HttpResponse}).
-   * 
-   * @param httpObject
-   * @return ConnectionState
-   */
-  protected abstract ConnectionState readHTTPInitial(I httpObject);
-
-  /**
-   * Implement this to handle reading a chunk in a chunked transfer.
-   * 
-   * @param chunk
-   */
-  protected abstract void readHTTPChunk(HttpContent chunk);
-
-  /**
-   * Implement this to handle reading a raw buffer as they are used in HTTP
-   * tunneling.
-   * 
-   * @param buf
-   */
-  protected abstract void readRaw(ByteBuf buf);
-
   /***************************************************************************
    * Writing
    **************************************************************************/
@@ -269,7 +247,8 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
     writeToChannel(buf);
   }
 
-  protected ChannelFuture writeToChannel(final Object msg) {
+  @Override
+  public ChannelFuture writeToChannel(final Object msg) {
     return channel.writeAndFlush(msg);
   }
 
@@ -291,7 +270,8 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
    * This method is called as soon as the underlying {@link Channel} becomes
    * disconnected.
    */
-  protected void disconnected() {
+  @Override
+  public void disconnected() {
     become(ConnectionState.DISCONNECTED);
     LOGGER.debug("Disconnected");
   }
@@ -338,7 +318,7 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
             if (pipeline.get("requestReadMonitor") != null) {
               pipeline.remove("requestReadMonitor");
             }
-            ProxyConnection.this.tunneling = true;
+            AbstractProxyConnection.this.tunneling = true;
             return channel.newSucceededFuture();
           } catch (Throwable t) {
             return channel.newFailedFuture(t);

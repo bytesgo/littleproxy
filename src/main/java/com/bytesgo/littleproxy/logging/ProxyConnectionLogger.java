@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
 import org.slf4j.spi.LocationAwareLogger;
-import com.bytesgo.littleproxy.server.connection.ProxyConnection;
+import com.bytesgo.littleproxy.server.connection.AbstractProxyConnection;
 
 /**
  * <p>
@@ -22,13 +22,13 @@ import com.bytesgo.littleproxy.server.connection.ProxyConnection;
  * </p>
  */
 public class ProxyConnectionLogger implements com.bytesgo.littleproxy.logging.Logger {
-  private final ProxyConnection<?> connection;
+  private final AbstractProxyConnection<?> connection;
   private final LogDispatch dispatch;
   private final Logger logger;
   private final String fqcn = this.getClass()
       .getCanonicalName();
 
-  public ProxyConnectionLogger(ProxyConnection<?> connection) {
+  public ProxyConnectionLogger(AbstractProxyConnection<?> connection) {
     this.connection = connection;
     final Logger lg = LoggerFactory.getLogger(connection.getClass());
     if (lg instanceof LocationAwareLogger) {

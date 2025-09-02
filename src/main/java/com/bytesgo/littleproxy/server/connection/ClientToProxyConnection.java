@@ -83,7 +83,7 @@ import io.netty.util.concurrent.GenericFutureListener;
  * .
  * </p>
  */
-public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
+public class ClientToProxyConnection extends AbstractProxyConnection<HttpRequest> implements ConnectionLifecycle<HttpRequest> {
   private static final HttpResponseStatus CONNECTION_ESTABLISHED =
       new HttpResponseStatus(200, "Connection established");
   /**
@@ -175,7 +175,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
    **************************************************************************/
 
   @Override
-  protected ConnectionState readHTTPInitial(HttpRequest httpRequest) {
+  public ConnectionState readHTTPInitial(HttpRequest httpRequest) {
     LOGGER.debug("Received raw request: {}", httpRequest);
 
     // if we cannot parse the request, immediately return a 400 and close the
@@ -390,7 +390,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
   }
 
   @Override
-  protected void readHTTPChunk(HttpContent chunk) {
+  public void readHTTPChunk(HttpContent chunk) {
     currentFilters.clientToProxyRequest(chunk);
     currentFilters.proxyToServerRequest(chunk);
 
@@ -398,7 +398,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
   }
 
   @Override
-  protected void readRaw(ByteBuf buf) {
+  public void readRaw(ByteBuf buf) {
     currentServerConnection.write(buf);
   }
 
@@ -420,7 +420,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
   void respond(ProxyToServerConnection serverConnection, HttpFilter filters, HttpRequest currentHttpRequest,
       HttpResponse currentHttpResponse, HttpObject httpObject) {
     // we are sending a response to the client, so we are done handling this request
-    ReferenceCountUtil.release(this.currentRequest);
+    ReferenceCountUtil.releaseIfNecessary(this.currentRequest);
     this.currentRequest = null;
 
     httpObject = filters.serverToProxyResponse(httpObject);
@@ -540,7 +540,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
    * On disconnect of the client, disconnect all server connections.
    */
   @Override
-  protected void disconnected() {
+  public void disconnected() {
     super.disconnected();
     for (ProxyToServerConnection serverConnection : serverConnectionsByHostAndPort.values()) {
       serverConnection.disconnect();
@@ -1265,7 +1265,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
    */
   private boolean respondWithShortCircuitResponse(HttpResponse httpResponse) {
     // we are sending a response to the client, so we are done handling this request
-    ReferenceCountUtil.release(this.currentRequest);
+    ReferenceCountUtil.releaseIfNecessary(this.currentRequest);
     this.currentRequest = null;
 
     HttpResponse filteredResponse = (HttpResponse) currentFilters.proxyToClientResponse(httpResponse);

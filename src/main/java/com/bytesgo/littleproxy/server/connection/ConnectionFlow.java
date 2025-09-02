@@ -95,7 +95,7 @@ public class ConnectionFlow {
    * </p>
    * 
    * <ol>
-   * <li>Change the state of the associated {@link ProxyConnection} to the value
+   * <li>Change the state of the associated {@link AbstractProxyConnection} to the value
    * of {@link ConnectionFlowStep#getState()}</li>
    * <li>Call {@link ConnectionFlowStep#execute()}</li>
    * <li>On completion of the {@link Future} returned by
@@ -107,7 +107,7 @@ public class ConnectionFlow {
    * </ol>
    */
   private void processCurrentStep() {
-    final ProxyConnection<?> connection = currentStep.getConnection();
+    final AbstractProxyConnection<?> connection = currentStep.getConnection();
     final Logger LOG = connection.getLogger();
 
     LOG.debug("Processing connection flow step: {}", currentStep);

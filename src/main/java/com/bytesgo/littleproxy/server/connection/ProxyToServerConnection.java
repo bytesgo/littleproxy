@@ -75,7 +75,8 @@ import io.netty.util.concurrent.GenericFutureListener;
  * </p>
  */
 @Sharable
-public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
+public class ProxyToServerConnection extends AbstractProxyConnection<HttpResponse>
+    implements ConnectionLifecycle<HttpResponse> {
   private final ClientToProxyConnection clientConnection;
   private final ProxyToServerConnection serverConnection = this;
   private volatile TransportProtocol transportProtocol;
@@ -202,7 +203,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
   }
 
   @Override
-  protected ConnectionState readHTTPInitial(HttpResponse httpResponse) {
+  public ConnectionState readHTTPInitial(HttpResponse httpResponse) {
     LOGGER.debug("Received raw response: {}", httpResponse);
 
     if (httpResponse.decoderResult()
@@ -236,12 +237,12 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
   }
 
   @Override
-  protected void readHTTPChunk(HttpContent chunk) {
+  public void readHTTPChunk(HttpContent chunk) {
     respondWith(chunk);
   }
 
   @Override
-  protected void readRaw(ByteBuf buf) {
+  public void readRaw(ByteBuf buf) {
     clientConnection.write(buf);
   }
 
@@ -403,7 +404,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
   }
 
   @Override
-  protected void disconnected() {
+  public void disconnected() {
     super.disconnected();
     if (this.proxyChain != null) {
       // Let the ChainedProxy know that we disconnected
@@ -534,7 +535,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
    * CONNECTs.
    */
   private void initializeConnectionFlow() {
-    this.connectionFlow = new ConnectionFlow(clientConnection, this, connectLock).then(ConnectChannel);
+    this.connectionFlow = new ConnectionFlow(clientConnection, this, connectLock).then(connectChannel);
 
     if (proxyChain != null && proxyChain.requiresEncryption()) {
       connectionFlow.then(serverConnection.encryptChannel(proxyChain.newSslEngine()));
@@ -579,7 +580,8 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
   /**
    * Opens the socket connection.
    */
-  private ConnectionFlowStep<Void> ConnectChannel = new ConnectionFlowStep<Void>(this, ConnectionState.CONNECTING) {
+  private ConnectionFlowStep<Void> connectChannel = new ConnectionFlowStep<Void>(this, ConnectionState.CONNECTING) {
+
     @Override
     boolean shouldExecuteOnEventLoop() {
       return false;
@@ -628,6 +630,8 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
    */
   private ConnectionFlowStep<Void> HTTPCONNECTWithChainedProxy =
       new ConnectionFlowStep<Void>(this, ConnectionState.AWAITING_CONNECT_OK) {
+
+        @Override
         protected Future<Void> execute() {
           LOGGER.debug("Handling CONNECT request through Chained Proxy");
           proxyChain.filterRequest(initialRequest);
@@ -642,8 +646,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
            * state.
            */
           if (isMitmEnabled) {
-            ChannelFuture future = writeToChannel(initialRequest);
-            future.addListener(new ChannelFutureListener() {
+            return writeToChannel(initialRequest).addListener(new ChannelFutureListener() {
 
               @Override
               public void operationComplete(ChannelFuture arg0) throws Exception {
@@ -652,7 +655,6 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
                 }
               }
             });
-            return future;
           } else {
             return writeToChannel(initialRequest);
           }
@@ -930,7 +932,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
     // HttpObjectAggregator is in
     // the pipeline to generate FullHttpRequests), we need to manually release it to
     // avoid a memory leak.
-    ReferenceCountUtil.release(initialRequest);
+    ReferenceCountUtil.releaseIfNecessary(initialRequest);
   }
 
   /**
